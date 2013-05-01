@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import octopus.semantic.similarity.resource.IMSRResource;
+import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
 
 /**
  * This is the common interface that each MSR algorithm should implement
@@ -11,7 +12,6 @@ import octopus.semantic.similarity.resource.IMSRResource;
  *
  */
 public interface IMSR {
-	List<IMSRResource> requiredResources = new ArrayList<IMSRResource>();
-
-	public List<IMSRResource> getRequiredResources();
+	public ResourceType getRequiredResourceType();
+	public double calculateSimilarity(IMSRResource resource, String word1, String word2);
 }
