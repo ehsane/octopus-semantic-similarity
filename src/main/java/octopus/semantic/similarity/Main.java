@@ -1,5 +1,10 @@
 package octopus.semantic.similarity;
 
+import java.io.IOException;
+import java.util.Properties;
+
+import org.omg.CORBA.portable.ApplicationException;
+
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -11,8 +16,13 @@ import com.martiansoftware.jsap.JSAPResult;
  */
 public class Main 
 {
+	static Properties properties = new Properties();
+	 
+
     public static void main( String[] args ) throws JSAPException
     {
+    	loadProperties();
+    	
         JSAP jsap = new JSAP();
         
         // create a flagged option we'll access using the id "count".
@@ -49,5 +59,15 @@ public class Main
         if(action.equals("train")){
         	HybridBAMSR.train(config.getString("trainset"));
         }
+
     }
+    
+	private static void loadProperties() {
+		try {
+	           //load a properties file from class path, inside static method
+			properties.load(Main.class.getClassLoader().getResourceAsStream("config.properties"));
+		} catch (IOException ex) {
+			ex.printStackTrace();
+	    }
+	}
 }

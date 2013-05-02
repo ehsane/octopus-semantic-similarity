@@ -39,8 +39,8 @@ public class SemanticSimilarityBlender {
 	 * @param word2
 	 * @return an array of similarities corresponding to array of combinations
 	 */
-	public static double[] calculateAllSimilarities(String word1, String word2){
-		double[] results = new double[getMsrResorceCombinations().size()];
+	public static List<Double> calculateAllSimilarities(String word1, String word2){
+		List<Double> results = new ArrayList<Double>();
 		for(int i=0;i<msrResorceCombinations.size();i++){
 			SimpleEntry<IMSR, IMSRResource> combination = msrResorceCombinations.get(i);
 			IMSR msr = combination.getKey();
@@ -52,7 +52,7 @@ public class SemanticSimilarityBlender {
 					CacheManager.setSimilarity(resource, word1, word2, similarity);
 			}
 			
-			results[i] = similarity;
+			results.add(similarity);
 		}
 		return results;
 	}
