@@ -13,4 +13,5 @@ public interface IMSRResource {
 	}
 	
 	public ResourceType getResourceType();
+	public String getResourceName();
 }

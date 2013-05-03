@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import octopus.semantic.similarity.msr.IMSR;
+import octopus.semantic.similarity.msr.MSRLSA;
 import octopus.semantic.similarity.resource.IMSRResource;
 
 /**
@@ -14,7 +15,7 @@ import octopus.semantic.similarity.resource.IMSRResource;
  *
  */
 public class SemanticSimilarityBlender {
-	static IMSR[] msrs = new IMSR[]{}; 
+	static IMSR[] msrs = new IMSR[]{new MSRLSA()}; 
 	static IMSRResource[] resources = new IMSRResource[]{};
 	private static List<SimpleEntry<IMSR, IMSRResource>> msrResorceCombinations
 	 	= new ArrayList<SimpleEntry<IMSR,IMSRResource>>(); 
