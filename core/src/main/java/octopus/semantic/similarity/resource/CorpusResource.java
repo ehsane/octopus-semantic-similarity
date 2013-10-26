@@ -15,7 +15,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -70,8 +72,6 @@ public abstract class CorpusResource implements IMSRResource{
 			IndexWriter writer = new IndexWriter(dir, iwc);
 			indexDocs(writer, docDir);
 
-			writer.optimize();
-
 			writer.close();
 
 			Date end = new Date();
@@ -122,7 +122,6 @@ public abstract class CorpusResource implements IMSRResource{
 				// or positional information:
 				Field pathField = new Field("path", file.getPath(), 
 						Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-				pathField.setOmitTermFreqAndPositions(true);
 				doc.add(pathField);
 
 				// Add the last modified date of the file a field named "modified".
@@ -132,8 +131,8 @@ public abstract class CorpusResource implements IMSRResource{
 				// year/month/day/hour/minutes/seconds, down the resolution you require.
 				// For example the long value 2011021714 would mean
 				// February 17, 2011, 2-3 PM.
-				NumericField modifiedField = new NumericField("modified");
-				modifiedField.setLongValue(file.lastModified());
+				LongField modifiedField = new LongField("modified", file.lastModified(), 
+						Field.Store.YES);
 				doc.add(modifiedField);
 
 				// Add the contents of the file to a field named "contents".  Specify a Reader,

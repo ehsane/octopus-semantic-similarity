@@ -24,8 +24,8 @@ public class MSRLSA implements IMSR{
 		LuceneUtils luceneUtils = null;
 
 		VectorStoreReaderLucene vecReader = null;
-		FlagConfig flagConfig = new FlagConfig();
-		flagConfig.setLuceneindexpath(resource.getLuceneIndexFile());
+		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-ludeneindex "+resource.getLuceneIndexFile());
+		
 		
 		try {
 			vecReader = new VectorStoreReaderLucene(flagConfig.queryvectorfile(), flagConfig);
