@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import octopus.semantic.similarity.msr.IMSR;
-import octopus.semantic.similarity.msr.MSRLSA;
+import octopus.semantic.similarity.msr.vector.MSRLSA;
 import octopus.semantic.similarity.resource.IMSRResource;
 
 /**
@@ -49,8 +49,12 @@ public class SemanticSimilarityBlender {
 			
 			Double similarity = CacheManager.getSimilarity(resource, word1, word2);
 			if(similarity == null) {
-					similarity = msr.calculateSimilarity(resource, word1, word2);
-					CacheManager.setSimilarity(resource, word1, word2, similarity);
+					try {
+						similarity = msr.calculateSimilarity(resource, word1, word2);
+						CacheManager.setSimilarity(resource, word1, word2, similarity);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 			}
 			
 			results.add(similarity);

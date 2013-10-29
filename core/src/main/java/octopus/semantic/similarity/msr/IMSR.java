@@ -1,8 +1,5 @@
 package octopus.semantic.similarity.msr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import octopus.semantic.similarity.resource.IMSRResource;
 import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
 
@@ -13,5 +10,6 @@ import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
  */
 public interface IMSR {
 	public ResourceType getRequiredResourceType();
-	public double calculateSimilarity(IMSRResource resource, String word1, String word2);
+	public double calculateSimilarity(IMSRResource resource, String word1, String word2) 
+		throws Exception;
 }
