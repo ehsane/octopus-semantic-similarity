@@ -21,10 +21,12 @@ public abstract class GraphResource implements IMSRResource{
 	public G getGraph(){
 		return graph;
 	}
-	public void loadGraph(String graphFile) throws SLIB_Exception{
-		URI graph_uri = factory.createURI("http://graph/");
-		graph  = new GraphMemory(graph_uri);
-		GDataConf graphconf = new GDataConf(GFormat.NTRIPLES, graphFile);
+	protected void loadGraph(String graphFile, GFormat format) throws SLIB_Exception{
+		if(graph==null){
+			URI graph_uri = factory.createURI("http://graph/"+getResourceName()+"/");
+			graph  = new GraphMemory(graph_uri);
+		}
+		GDataConf graphconf = new GDataConf(format, graphFile);
 		GraphLoaderGeneric.populate(graphconf, graph);
 	}
 	public GraphResource(){
@@ -33,9 +35,13 @@ public abstract class GraphResource implements IMSRResource{
 	public ResourceType getResourceType() {
 		return resourceType;
 	}
-	public URI getWordURI(String string) {
-		return factory.createURI("http://graph/class/Horse");
+	public URI getWordURI(String word) {
+		return factory.createURI("http://graph/"+getResourceName()+"/"+word);
 	}
 	
+	@Override
+	public String toString(){
+		return getResourceName()+" - "+graph.toString();
+	}
 	
 }
