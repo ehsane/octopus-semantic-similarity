@@ -1,12 +1,13 @@
 package octopus.semantic.similarity;
 
-import octopus.semantic.similarity.ml.SVMLight;
+import rainbownlp.machinelearning.ILearnerEngine;
+import rainbownlp.machinelearning.SVMLightRegression;
 
 public class MLAlgorithmFactory {
 
-	public static IRegressionEngine getRegressionEngine() {
+	public static ILearnerEngine getRegressionEngine(String modelName) {
 		// TODO Auto-generated method stub
-		return new SVMLight();
+		return SVMLightRegression.getLearnerEngine(modelName);
 	}
 
 }

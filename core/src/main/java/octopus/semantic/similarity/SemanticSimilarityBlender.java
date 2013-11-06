@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import octopus.semantic.similarity.msr.IMSR;
-import octopus.semantic.similarity.msr.vector.MSRLSA;
 import octopus.semantic.similarity.resource.IMSRResource;
+import rainbownlp.core.FeatureValuePair;
+import rainbownlp.machinelearning.MLExample;
+import rainbownlp.machinelearning.MLExampleFeature;
+import rainbownlp.util.ConfigurationUtil;
 
 /**
  * This class match every MR with available resources and calculate the semantic 
@@ -15,15 +18,28 @@ import octopus.semantic.similarity.resource.IMSRResource;
  *
  */
 public class SemanticSimilarityBlender {
-	static IMSR[] msrs = new IMSR[]{new MSRLSA()}; 
-	static IMSRResource[] resources = new IMSRResource[]{};
+	static List<IMSR> msrs = new ArrayList<IMSR>(); 
+	static List<IMSRResource> resources = new ArrayList<IMSRResource>();
+	
 	private static List<SimpleEntry<IMSR, IMSRResource>> msrResorceCombinations
 	 	= new ArrayList<SimpleEntry<IMSR,IMSRResource>>(); 
 	
-	public static void initialize(){
+	public static void initialize() throws Exception{
+		ConfigurationUtil.init("config.properties");
+		String[] msrsClassNames = ConfigurationUtil.getArrayValues("msrs");
+		String[] resourcesClassNames = ConfigurationUtil.getArrayValues("resources");
+		
 		getMsrResorceCombinations().clear();
-		for(IMSR msr : msrs){
-			for(IMSRResource resource : resources){
+		for(String msrClassName : msrsClassNames){
+			IMSR msr = (IMSR) Class.forName(msrClassName).newInstance();
+			msrs.add(msr);
+		}
+		for(String resourceClassName: resourcesClassNames){
+			IMSRResource resource = (IMSRResource) Class.forName(resourceClassName).newInstance();
+			resources.add(resource);
+		}
+		for(IMSRResource resource: resources){
+			for(IMSR msr  : msrs){
 				if(msr.getRequiredResourceType().equals(resource.getResourceType())){
 					SimpleEntry<IMSR, IMSRResource> newCombination = new SimpleEntry<IMSR, IMSRResource>(msr, resource);
 					getMsrResorceCombinations().add(newCombination);
@@ -39,8 +55,11 @@ public class SemanticSimilarityBlender {
 	 * @param word1
 	 * @param word2
 	 * @return an array of similarities corresponding to array of combinations
+	 * @throws Exception 
 	 */
-	public static List<Double> calculateAllSimilarities(String word1, String word2){
+	public static List<Double> calculateAllSimilarities(MLExample example, String word1, String word2) throws Exception{
+		if(msrResorceCombinations.size()==0)
+			initialize();
 		List<Double> results = new ArrayList<Double>();
 		for(int i=0;i<msrResorceCombinations.size();i++){
 			SimpleEntry<IMSR, IMSRResource> combination = msrResorceCombinations.get(i);
@@ -58,8 +77,18 @@ public class SemanticSimilarityBlender {
 			}
 			
 			results.add(similarity);
+			
+			String featureName = msr.getMSRName()+"-"+resource.getResourceName();
+			addFeature(example, featureName, similarity);
 		}
 		return results;
+	}
+
+
+	private static void addFeature(MLExample example, String featureName,
+			Double value) {
+		FeatureValuePair newFeature = FeatureValuePair.getInstance(featureName, value.toString());
+		MLExampleFeature.setFeatureExample(example, newFeature);
 	}
 
 

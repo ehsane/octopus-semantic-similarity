@@ -10,6 +10,8 @@ import slib.sglib.model.graph.G;
 import slib.sglib.model.impl.graph.memory.GraphMemory;
 import slib.sglib.model.impl.repo.URIFactoryMemory;
 import slib.sglib.model.repo.URIFactory;
+import slib.sml.sm.core.engine.SM_Engine;
+import slib.utils.ex.SLIB_Ex_Critic;
 import slib.utils.ex.SLIB_Exception;
 
 
@@ -17,6 +19,7 @@ public abstract class GraphResource implements IMSRResource{
 	final ResourceType resourceType = ResourceType.GRAPH;
 	URIFactory factory = URIFactoryMemory.getSingleton();
 	G graph;
+	private SM_Engine engine = null;
     
 	public G getGraph(){
 		return graph;
@@ -36,12 +39,28 @@ public abstract class GraphResource implements IMSRResource{
 		return resourceType;
 	}
 	public URI getWordURI(String word) {
-		return factory.createURI("http://graph/"+getResourceName()+"/"+word);
+		String searchableContent = getSearchableContentForWord(word);
+		return factory.createURI("http://graph/"+getResourceName()+"/"+searchableContent);
 	}
 	
 	@Override
 	public String toString(){
 		return getResourceName()+" - "+graph.toString();
+	}
+	
+	@Override
+	public String getSearchableContentForWord(String word) {
+		return word;
+	}
+	
+	public SM_Engine getSMEngine() {
+		if(engine==null)
+			try {
+				engine  = new SM_Engine(graph);
+			} catch (SLIB_Ex_Critic e) {
+				e.printStackTrace();
+			}
+		return engine;
 	}
 	
 }

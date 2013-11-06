@@ -14,4 +14,11 @@ public interface IMSRResource {
 	
 	public ResourceType getResourceType();
 	public String getResourceName();
+	/**
+	 * Do any required mapping between word and acceptable content in the index
+	 * For example for wordnet corpus convert word to senseId
+	 * @param word
+	 * @return
+	 */
+	public String getSearchableContentForWord(String word);
 }

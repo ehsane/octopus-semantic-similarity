@@ -12,4 +12,5 @@ public interface IMSR {
 	public ResourceType getRequiredResourceType();
 	public double calculateSimilarity(IMSRResource resource, String word1, String word2) 
 		throws Exception;
+	public String getMSRName();
 }

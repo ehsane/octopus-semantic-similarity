@@ -53,4 +53,9 @@ public class MSRLSA implements IMSR{
 		return calculateSimilarity((CorpusResource)resource, word1, word2);
 	}
 
+	@Override
+	public String getMSRName() {
+		return "LSA";
+	}
+
 }

@@ -3,11 +3,10 @@ package octopus.semantic.similarity;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.omg.CORBA.portable.ApplicationException;
+import rainbownlp.util.ConfigurationUtil;
 
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 
 /**
@@ -19,8 +18,9 @@ public class Main
 	static Properties properties = new Properties();
 	 
 
-    public static void main( String[] args ) throws JSAPException
+    public static void main( String[] args ) throws Exception
     {
+    	ConfigurationUtil.init("config.properties");
     	loadProperties();
     	
         JSAP jsap = new JSAP();
@@ -57,7 +57,7 @@ public class Main
         JSAPResult config = jsap.parse(args);
         String action = config.getString("action");
         if(action.equals("train")){
-        	HybridBAMSR.train(config.getString("trainset"));
+        	HybridBAMSR.train(ConfigurationUtil.getValue("trainset"));
         }
 
     }

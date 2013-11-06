@@ -19,40 +19,53 @@ import slib.utils.ex.SLIB_Ex_Critic;
 
 public abstract class GraphBasedMSR implements IMSR{
 	static Logger logger = Logger.getLogger("GraphBasedMSR");
+	protected String msrName = "";
+	@Override
+	public String getMSRName(){
+		return msrName;
+	}
 	public ResourceType getRequiredResourceType() {
 		return ResourceType.GRAPH;
 	}
+	
+	public GraphBasedMSR() throws Exception{
+		icConf = new IC_Conf_Topo("Sanchez", 
+				SMConstants.FLAG_ICI_SANCHEZ_2011);
+	}
 
 	public abstract SMconf getSMConf() throws SLIB_Ex_Critic;
-	
+	ICconf icConf = null;
+
 	public double calculateSimilarity(GraphResource resource, String word1,
 			String word2) throws IOException, SLIB_Ex_Critic {
-		   
-	        G graph = resource.getGraph();
-	        // General information about the graph
-	        System.out.println(graph.toString());
-	        SM_Engine engine = new SM_Engine(graph);
-	       
-	        /*
-	         * Now the Semantic similarity computation
-	         * We will use an Lin measure using the information content 
-	         * definition proposed by Sanchez et al.
-	         * 
-	         */
-	        // First we define the information content (IC) we will use
-	        ICconf icConf = new IC_Conf_Topo("Sanchez", 
-	        		SMConstants.FLAG_ICI_SANCHEZ_2011);
-	         
-	        // Then we define the Semantic measure configuration
-	        SMconf smConf = getSMConf();
-	        smConf.setICconf(icConf);
-	         
-	        // Finally, we compute the similarity between the concepts Horse and Whale
-	        URI word1URI = resource.getWordURI(word1);
-	        URI word2URI = resource.getWordURI(word2);
-	        
-	        double sim = engine.computePairwiseSim(smConf, word1URI, word2URI);
-	        return sim;
+
+		
+		SM_Engine engine = resource.getSMEngine();
+
+		/*
+		 * Now the Semantic similarity computation
+		 * We will use an Lin measure using the information content 
+		 * definition proposed by Sanchez et al.
+		 * 
+		 */
+		// First we define the information content (IC) we will use
+
+		// Then we define the Semantic measure configuration
+		SMconf smConf = getSMConf();
+		smConf.setICconf(icConf);
+
+		// Finally, we compute the similarity between the concepts Horse and Whale
+		URI word1URI = resource.getWordURI(word1);
+		URI word2URI = resource.getWordURI(word2);
+		if(word1URI.stringValue().endsWith("null") ||
+				word2URI.stringValue().endsWith("null")){
+			System.out.println("didn't found a match in graph for ("+word1+" or "+word2+")");
+			return 0;
+		}
+			
+		double sim = engine.computePairwiseSim(smConf, word1URI, word2URI);
+		System.out.println("Similarity "+msrName+" ("+word1+","+word2+")="+sim);
+		return sim;
 	}
 
 	public double calculateSimilarity(IMSRResource resource, String word1,
