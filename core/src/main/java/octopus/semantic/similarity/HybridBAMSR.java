@@ -54,7 +54,7 @@ public class HybridBAMSR {
 			SimpleEntry<String, String> wordPair = entry.getValue();
 			Phrase p1 = Phrase.createIndependentPhrase(wordPair.getKey());
 			Phrase p2 = Phrase.createIndependentPhrase(wordPair.getValue());
-			PhraseLink pl = PhraseLink.createInstance(p1, p2);
+			PhraseLink pl = PhraseLink.getInstance(p1, p2);
 			MLExample newExample = MLExample.getInstanceForLink(pl, "test");
 			newExample.setExpectedClass(entry.getKey());
 

@@ -87,6 +87,7 @@ public class SemanticSimilarityBlender {
 
 	private static void addFeature(MLExample example, String featureName,
 			Double value) {
+		if(value==null) return;
 		FeatureValuePair newFeature = FeatureValuePair.getInstance(featureName, value.toString());
 		MLExampleFeature.setFeatureExample(example, newFeature);
 	}
