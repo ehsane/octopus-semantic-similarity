@@ -11,51 +11,41 @@ import octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader;
 import rainbownlp.core.FeatureValuePair;
 import rainbownlp.core.Phrase;
 import rainbownlp.core.PhraseLink;
-import rainbownlp.machinelearning.ILearnerEngine;
+import rainbownlp.machinelearning.LearnerEngine;
 import rainbownlp.machinelearning.MLExample;
 
-public class HybridBAMSR {
+public class HybridBAMSR extends LearnerEngine {
 	static String modelName = Main.properties.getProperty("model_name");
+	LearnerEngine regressionEngine = MLAlgorithmFactory.getRegressionEngine(modelName);
+
 	static Logger logger = Logger.getLogger("HybridBAMSR");
-	public static void train(String trainsetFile) throws Exception {
+	
+	public List<MLExample> createExamples(String corpusName) throws Exception {
 		List<SimpleEntry<Double, SimpleEntry<String, String>>> trainingInstances = 
-				loadWordPairRating(trainsetFile);
+				loadWordPairRating(corpusName);
 
-		List<MLExample> examples = createRegressionExamples(trainingInstances);
-
-		ILearnerEngine regressionEngine = MLAlgorithmFactory.getRegressionEngine(modelName);
-		FeatureValuePair.resetIndexes();
-		regressionEngine.train(examples);
-
-		logger.log(Level.INFO, "Training done, model created: "+ modelName);
-	}
-
-	public static void test(String testsetFile) throws Exception {
-		List<SimpleEntry<Double, SimpleEntry<String, String>>> testingInstances = 
-				loadWordPairRating(testsetFile);
-
-		List<MLExample> examples = createRegressionExamples(testingInstances);
-
-		ILearnerEngine regressionEngine = MLAlgorithmFactory.getRegressionEngine(modelName);
-		regressionEngine.test(examples);
-
-		logger.log(Level.INFO, "Testing done, model used: "+ modelName);
+		List<MLExample> examples = createRegressionExamples(trainingInstances, corpusName);
+		 FeatureValuePair.resetIndexes();
+     	
+		return examples;
 	}
 
 	/**
 	 * returns features for each item in the argument in a corresponding index
+	 * @param corpusName 
 	 * @param trainingInstances
 	 * @return
 	 * @throws Exception 
 	 */
-	private static List<MLExample> createRegressionExamples(List<SimpleEntry<Double, SimpleEntry<String, String>>> exampleEntries) throws Exception {
+	private List<MLExample> createRegressionExamples(List<SimpleEntry<Double, SimpleEntry<String, String>>> exampleEntries,
+			String corpusName) throws Exception {
 		List<MLExample> examples = new ArrayList<MLExample>();
 		for(SimpleEntry<Double, SimpleEntry<String, String>> entry : exampleEntries){
 			SimpleEntry<String, String> wordPair = entry.getValue();
 			Phrase p1 = Phrase.createIndependentPhrase(wordPair.getKey());
 			Phrase p2 = Phrase.createIndependentPhrase(wordPair.getValue());
 			PhraseLink pl = PhraseLink.getInstance(p1, p2);
-			MLExample newExample = MLExample.getInstanceForLink(pl, "test");
+			MLExample newExample = MLExample.getInstanceForLink(pl, corpusName);
 			newExample.setExpectedClass(entry.getKey());
 
 			SemanticSimilarityBlender.calculateAllSimilarities(newExample ,
@@ -89,7 +79,7 @@ public class HybridBAMSR {
 				break;
 			case MAYOSRS_MINI:
 				 loader = new CSVBenchmarkLoader(benchmarkFileRoot + 
-						 "MayoSRS.csv",0, 4, 5);
+						 "MayoSRS.csv",0, 3, 4);
 				break;
 			case Rubenstein_Goodenough_1965:
 				 loader = new CSVBenchmarkLoader(benchmarkFileRoot + 
@@ -108,6 +98,19 @@ public class HybridBAMSR {
 			}
 		}
 		return annotations;
+	}
+
+	@Override
+	public void train(List<MLExample> pTrainExamples) throws Exception {
+		regressionEngine.train(pTrainExamples);
+		logger.log(Level.INFO, "Training done, model created: "+ modelName);
+		
+	}
+
+	@Override
+	public void test(List<MLExample> pTestExamples) throws Exception {
+		regressionEngine.test(pTestExamples);
+		logger.log(Level.INFO, "Testing done, model used: "+ modelName);
 	}
 
 }

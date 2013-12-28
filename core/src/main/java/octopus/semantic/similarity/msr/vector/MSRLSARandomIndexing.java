@@ -14,23 +14,24 @@ import pitt.search.semanticvectors.FlagConfig;
 import pitt.search.semanticvectors.LuceneUtils;
 import pitt.search.semanticvectors.VectorStoreReaderLucene;
 import pitt.search.semanticvectors.vectors.Vector;
-import slib.sml.sm.core.utils.SMconf;
-import slib.utils.ex.SLIB_Ex_Critic;
 
-public class MSRLSA extends VectorBasedMSR{
-	public MSRLSA() throws Exception {
+public class MSRLSARandomIndexing extends VectorBasedMSR{
+	public MSRLSARandomIndexing() throws Exception {
 		super();
 	}
 
 	static Logger logger = Logger.getLogger("MSRLSA");
+	public ResourceType getRequiredResourceType() {
+		return ResourceType.CORPUS;
+	}
 
 	public double calculateSimilarity(CorpusResource resource, String word1,
 			String word2) throws IOException {
 		LuceneUtils luceneUtils = null;
 
 		VectorStoreReaderLucene vecReader = null;
-		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+resource.getLuceneIndexFile()+
-				" -termvectorsfile svd_termvectors.bin -docvectorsfile svd_docvectors");
+		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+resource.getLuceneIndexFile()
+				+" -termvectorsfile termvectors.bin");
 		
 		try {
 			vecReader = new VectorStoreReaderLucene(flagConfig.termvectorsfile(), flagConfig);
@@ -61,6 +62,5 @@ public class MSRLSA extends VectorBasedMSR{
 	public String getMSRName() {
 		return "LSA";
 	}
-
 
 }

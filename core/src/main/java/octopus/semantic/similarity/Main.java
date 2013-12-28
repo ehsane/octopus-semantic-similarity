@@ -3,6 +3,10 @@ package octopus.semantic.similarity;
 import java.io.IOException;
 import java.util.Properties;
 
+import rainbownlp.analyzer.evaluation.FeatureEvaluator;
+import rainbownlp.analyzer.evaluation.regression.RegressionCrossValidation;
+import rainbownlp.core.FeatureValuePair;
+import rainbownlp.machinelearning.MLExample;
 import rainbownlp.util.ConfigurationUtil;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -56,8 +60,18 @@ public class Main
 
         JSAPResult config = jsap.parse(args);
         String action = config.getString("action");
-        if(action.equals("train")){
-        	HybridBAMSR.train(ConfigurationUtil.getValue("trainset"));
+        HybridBAMSR bamsr = new HybridBAMSR();
+        String corpusName = ConfigurationUtil.getValue("corpusName");
+    	 if(action.equals("train")){
+    		bamsr.train(bamsr.createExamples(corpusName));
+        }else if(action.equals("crossfold")){
+        	FeatureValuePair.resetIndexes();
+        	RegressionCrossValidation cv = new RegressionCrossValidation(bamsr);
+        	cv.crossValidation(MLExample.getAllExamples(corpusName, false), 2).printResult();
+        }else if(action.equals("featureselection")){
+        	RegressionCrossValidation cv = new RegressionCrossValidation(bamsr);
+        	FeatureEvaluator fe = new FeatureEvaluator();
+        	fe.evaluateFeatures(cv, MLExample.getAllExamples(corpusName, false));
         }
 
     }

@@ -25,6 +25,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 import pitt.search.semanticvectors.BuildIndex;
+import pitt.search.semanticvectors.LSA;
 
 public abstract class CorpusResource implements IMSRResource{
 	static Logger logger = Logger.getLogger("CorpusResource");
@@ -37,16 +38,13 @@ public abstract class CorpusResource implements IMSRResource{
 	public CorpusResource(String name, String pRootPath){
 		resourceName = name;
 		luceneIndexFile = resourceName + ".lucene";
+		rootPath = pRootPath;
 		createLuceneIndex();
 	}
 
 	public ResourceType getResourceType() {
 		return resourceType;
 	}
-
-	public abstract String getDocByIndex(int index);
-	public abstract List<String> getAllDocs();
-	public abstract int getCorpusSize();
 
 
 	private void createLuceneIndex()
@@ -77,7 +75,10 @@ public abstract class CorpusResource implements IMSRResource{
 
 			logger.log(Level.INFO, "Building Semantic Vector Index...");
 
-			BuildIndex.main(new String[]{getLuceneIndexFile()});
+			//create random indexing index
+			BuildIndex.main(new String[]{"-luceneindexpath", getLuceneIndexFile()});
+			//create SVD index
+			LSA.main(new String[]{"-luceneindexpath", getLuceneIndexFile()});
 
 		} catch (IOException e) {
 			System.out.println(" caught a " + e.getClass() +
@@ -160,4 +161,19 @@ public abstract class CorpusResource implements IMSRResource{
 	public String getLuceneIndexFile() {
 		return luceneIndexFile;
 	}
+	
+	@Override
+	public String getSearchableContentForWord(String word) {
+		return word;
+	}
+	
+	
+	public int getCorpusSize(){
+		return 1;
+	}
+	
+	public int getMatchedDocsCount(String word){
+		return 1;
+	}
+
 }

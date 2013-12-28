@@ -24,6 +24,9 @@ public abstract class GraphResource implements IMSRResource{
 	public G getGraph(){
 		return graph;
 	}
+	protected void setGraph(G pGraph){
+		graph = pGraph;
+	}
 	protected void loadGraph(String graphFile, GFormat format) throws SLIB_Exception{
 		if(graph==null){
 			URI graph_uri = factory.createURI("http://graph/"+getResourceName()+"/");
@@ -40,9 +43,12 @@ public abstract class GraphResource implements IMSRResource{
 	}
 	public URI getWordURI(String word) {
 		String searchableContent = getSearchableContentForWord(word);
-		return factory.createURI("http://graph/"+getResourceName()+"/"+searchableContent);
+		return getURI(searchableContent);
 	}
 	
+	public URI getURI(String conceptId) {
+		return factory.createURI("http://graph/"+getResourceName()+"/"+conceptId);
+	}
 	@Override
 	public String toString(){
 		return getResourceName()+" - "+graph.toString();
