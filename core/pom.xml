@@ -1,30 +1,121 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>octopus.semantic.similarity</groupId>
+  <groupId>octopus-ss</groupId>
   <artifactId>octopus-ss</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
-
-  <name>octopus-ss</name>
-  <url>http://maven.apache.org</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-<repositories>
-  <repository>
-    <id>ukp-oss-model-releases</id>
-    <url>http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-model-releases-local</url>
-   </repository>
-</repositories>
+  <build>
+    <resources>
+      <resource>
+        <directory>resources</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source/>
+          <target/>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+  	<dependency>
+  		<groupId>RainbowNLP</groupId>
+  		<artifactId>RainbowNLP</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		
+  	</dependency>
+
+
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>slib-utils</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>sglib-model-impl</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>slib-indexer</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>sglib-algo</artifactId>
+            <version>0.8</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>sglib-io</artifactId>
+            <version>0.8</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>fr.lgi2p.kid</groupId>
+            <artifactId>slib-sml</artifactId>
+            <version>0.8</version>
+        </dependency>
+<dependency>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20140107</version>
+</dependency>
+<dependency>
+	<groupId>com.martiansoftware</groupId>
+	<artifactId>jsap</artifactId>
+	<version>2.1</version>
+</dependency>
+<dependency>
+	<groupId>oauth.signpost</groupId>
+	<artifactId>signpost-core</artifactId>
+	<version>1.2</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.lucene</groupId>
+	<artifactId>lucene-core</artifactId>
+	<version>4.8.0</version>
+</dependency>
+
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-csv</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>pitt.search</groupId>
+    <artifactId>semanticvectors</artifactId>
+    <version>5.4</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.lucene</groupId>
+	<artifactId>lucene-analyzers</artifactId>
+	<version>3.6.2</version>
+</dependency>
+<!-- <dependency> -->
+<!-- 	<groupId>net.sf.extjwnl</groupId> -->
+<!-- 	<artifactId>extjwnl</artifactId> -->
+<!-- 	<version>1.7.1</version> -->
+<!-- </dependency> -->
+<dependency>
+    <groupId>net.sf.jazzy</groupId>
+    <artifactId>jazzy</artifactId>
+    <version>0.5.2-rtext-1.4.1-2</version>
+</dependency>
   </dependencies>
-</project>
+    	<repositories>
+    <repository>
+    <id>apache-snapshots</id>
+    <url>http://repository.apache.org/snapshots/</url>
+  </repository>
+  </repositories>
+  
+  </project>

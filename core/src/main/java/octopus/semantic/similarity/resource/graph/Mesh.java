@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import octopus.semantic.similarity.resource.GraphResource;
-import octopus.semantic.similarity.resource.graph.slibextend.MESHXMLGraphLoader;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDFS;
@@ -13,6 +12,7 @@ import org.openrdf.model.vocabulary.RDFS;
 import rainbownlp.util.ConfigurationUtil;
 import slib.sglib.algo.graph.validator.dag.ValidatorDAG;
 import slib.sglib.io.conf.GDataConf;
+import slib.sglib.io.loader.GraphLoaderGeneric;
 import slib.sglib.io.util.GFormat;
 import slib.sglib.model.graph.G;
 import slib.sglib.model.graph.elements.E;
@@ -25,7 +25,6 @@ import slib.utils.ex.SLIB_Ex_Critic;
 public class Mesh extends GraphResource{
 	HashMap<String, List<String>> wordSenseIdMap = new HashMap<String, List<String>>();
 	G meshGraph;
-	 public MESHXMLGraphLoader meshLoader = new MESHXMLGraphLoader();
      
 	public static void main(String[] args) throws Exception{
 		ConfigurationUtil.init("config.properties");
@@ -40,8 +39,8 @@ public class Mesh extends GraphResource{
 
         meshGraph = new GraphMemory(meshURI);
         String meshFilePath = ConfigurationUtil.getValue("meshPath");
-        GDataConf dataMeshXML = new GDataConf(GFormat.MESH_XML, meshFilePath); // the DTD must be located in the same directory
-       meshLoader.populate(dataMeshXML, meshGraph);
+       GDataConf dataMeshXML = new GDataConf(GFormat.MESH_XML, meshFilePath); // the DTD must be located in the same directory
+       GraphLoaderGeneric.populate(dataMeshXML, meshGraph);
 
         System.out.println(meshGraph);
 
@@ -126,7 +125,7 @@ public class Mesh extends GraphResource{
 	
 	@Override
 	public String getSearchableContentForWord(String word) {
-		String searchableContent = meshLoader.getIDForConcept(word);
+		String searchableContent = "TODO:COMPLETE";//meshGraph.getIDForConcept(word);
 //		if(searchableContent == null) searchableContent = word.toLowerCase();
 		System.out.println(word+" mapped to-> "+searchableContent);
 		return searchableContent;

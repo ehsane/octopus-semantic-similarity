@@ -9,7 +9,8 @@ public interface IMSRResource {
 	public static enum ResourceType{
 		GRAPH,
 		CORPUS,
-		DICTIONARY
+		DICTIONARY, 
+		TEXTUAL_CORPUS
 	}
 	
 	public ResourceType getResourceType();

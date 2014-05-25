@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import octopus.semantic.similarity.msr.IMSR;
 import octopus.semantic.similarity.msr.VectorBasedMSR;
 import octopus.semantic.similarity.resource.CorpusResource;
 import octopus.semantic.similarity.resource.IMSRResource;
-import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
+import octopus.semantic.similarity.resource.TextualCorpusResource;
 import pitt.search.semanticvectors.CompoundVectorBuilder;
 import pitt.search.semanticvectors.FlagConfig;
 import pitt.search.semanticvectors.LuceneUtils;
@@ -21,11 +20,9 @@ public class MSRLSARandomIndexing extends VectorBasedMSR{
 	}
 
 	static Logger logger = Logger.getLogger("MSRLSA");
-	public ResourceType getRequiredResourceType() {
-		return ResourceType.CORPUS;
-	}
 
-	public double calculateSimilarity(CorpusResource resource, String word1,
+
+	public double calculateSimilarity(TextualCorpusResource resource, String word1,
 			String word2) throws IOException {
 		LuceneUtils luceneUtils = null;
 

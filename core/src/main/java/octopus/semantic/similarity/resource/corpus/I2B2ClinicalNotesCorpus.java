@@ -3,9 +3,9 @@ package octopus.semantic.similarity.resource.corpus;
 import octopus.semantic.similarity.resource.TextualCorpusResource;
 import rainbownlp.util.ConfigurationUtil;
 
-public class BioNLPCorpus extends TextualCorpusResource{
+public class I2B2ClinicalNotesCorpus extends TextualCorpusResource{
 
-	public BioNLPCorpus(){
+	public I2B2ClinicalNotesCorpus(){
 		super("BioNLP", ConfigurationUtil.getValue("bioNLPRootPath"));
 	}
 

@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.extjwnl.JWNL;
-import net.sf.extjwnl.JWNLException;
-import net.sf.extjwnl.data.IndexWord;
-import net.sf.extjwnl.data.POS;
-import net.sf.extjwnl.data.Synset;
-import net.sf.extjwnl.dictionary.Dictionary;
+import net.didion.jwnl.JWNL;
+import net.didion.jwnl.JWNLException;
+import net.didion.jwnl.data.IndexWord;
+import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.dictionary.Dictionary;
 import octopus.semantic.similarity.resource.GraphResource;
 import rainbownlp.util.FileUtil;
 import slib.sglib.io.util.GFormat;
@@ -18,6 +18,7 @@ import slib.sglib.io.util.GFormat;
 public class WordNet extends GraphResource{
 	HashMap<String, List<String>> wordSenseIdMap = new HashMap<String, List<String>>();
 	Dictionary  database = null;
+	FileInputStream inputStream;
 	public static void main(String[] args) throws Exception{
 		WordNet wn = new WordNet();
 		System.out.println(wn);
@@ -39,11 +40,11 @@ public class WordNet extends GraphResource{
 //		loadSenseIdMap(data_adj);
 //		loadSenseIdMap(data_adv);
 		
-		JWNL.initialize(new 
-				FileInputStream(
-						this.getClass().getClassLoader().getResource("jwordnet/file_properties.xml").getPath()
-						)
-		);
+		inputStream = new 
+		FileInputStream(
+				this.getClass().getClassLoader().getResource("jwordnet/file_properties.xml").getPath()
+				);
+		JWNL.initialize(inputStream); 
 		
 		database =  Dictionary.getInstance();
 	}
@@ -72,14 +73,14 @@ public class WordNet extends GraphResource{
 	@Override
 	public String getSearchableContentForWord(String word) {
 		try {
-			IndexWord indexWord = Dictionary.getInstance().getIndexWord(POS.NOUN, word);
-			List<Synset> synsets = indexWord.getSenses();
-			if(synsets == null || synsets.size()==0){
+			IndexWord indexWord = database.getIndexWord(POS.NOUN, word);
+			Synset[] synsets = indexWord.getSenses();
+			if(synsets == null || synsets.length==0){
 				System.out.println("No sense found for: "+word);
 				return null;
 			}
-			String offset = String.valueOf(synsets.get(0).getOffset());
-			long tmpOffset = synsets.get(0).getOffset();
+			String offset = String.valueOf(synsets[0].getOffset());
+			long tmpOffset = synsets[0].getOffset();
 			while(tmpOffset<10000000){
 				offset="0"+offset;
 				tmpOffset*=10;

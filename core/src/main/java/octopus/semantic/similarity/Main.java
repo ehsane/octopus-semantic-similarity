@@ -1,10 +1,12 @@
 package octopus.semantic.similarity;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import rainbownlp.analyzer.evaluation.FeatureEvaluator;
 import rainbownlp.analyzer.evaluation.regression.RegressionCrossValidation;
+import rainbownlp.analyzer.evaluation.regression.RegressionEvaluator;
 import rainbownlp.core.FeatureValuePair;
 import rainbownlp.machinelearning.MLExample;
 import rainbownlp.util.ConfigurationUtil;
@@ -72,6 +74,14 @@ public class Main
         	RegressionCrossValidation cv = new RegressionCrossValidation(bamsr);
         	FeatureEvaluator fe = new FeatureEvaluator();
         	fe.evaluateFeatures(cv, MLExample.getAllExamples(corpusName, false));
+        }else if(action.equals("evaluate_onebyone")){
+        	bamsr.createExamples(corpusName);
+        	List<String> msrCombinationCorpusName = SemanticSimilarityBlender.getMSRFeatures();
+        	for(String corpus : msrCombinationCorpusName){
+        		List<MLExample> examples = MLExample.getAllExamples(corpus, false);
+        		System.out.println("----> "+corpus);
+        		RegressionEvaluator.getEvaluationResult(examples).printResult();
+        	}
         }
 
     }

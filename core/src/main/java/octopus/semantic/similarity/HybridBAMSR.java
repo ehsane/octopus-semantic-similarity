@@ -73,11 +73,11 @@ public class HybridBAMSR extends LearnerEngine {
 		BenchmarkSetLoader loader = null;
 		String benchmarkFileRoot = "data/benchmarks/";
 		switch(benchmarkSet){
-			case MAYOSRS:
+			case MAYOSRS_MINI:
 				 loader = new CSVBenchmarkLoader(benchmarkFileRoot + 
 						 "MiniMayoSRS.csv",0, 4, 5);
 				break;
-			case MAYOSRS_MINI:
+			case MAYOSRS:
 				 loader = new CSVBenchmarkLoader(benchmarkFileRoot + 
 						 "MayoSRS.csv",0, 3, 4);
 				break;

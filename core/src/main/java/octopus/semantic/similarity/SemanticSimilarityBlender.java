@@ -10,6 +10,8 @@ import rainbownlp.core.FeatureValuePair;
 import rainbownlp.machinelearning.MLExample;
 import rainbownlp.machinelearning.MLExampleFeature;
 import rainbownlp.util.ConfigurationUtil;
+import rainbownlp.util.HibernateUtil;
+import rainbownlp.util.caching.CacheEntry;
 
 /**
  * This class match every MR with available resources and calculate the semantic 
@@ -65,21 +67,32 @@ public class SemanticSimilarityBlender {
 			SimpleEntry<IMSR, IMSRResource> combination = msrResorceCombinations.get(i);
 			IMSR msr = combination.getKey();
 			IMSRResource resource = combination.getValue();
-			
-			Double similarity = CacheManager.getSimilarity(resource, word1, word2);
-			if(similarity == null) {
+			String cacheKey = "MSR-"+msr.getMSRName()+"-"+resource.getResourceName()+"-"+word1+"-"+word2;
+			CacheEntry similarityFromCache = CacheEntry.get(cacheKey);
+			Double similarity = 0D;
+			if(similarityFromCache == null) {
 					try {
 						similarity = msr.calculateSimilarity(resource, word1, word2);
-						CacheManager.setSimilarity(resource, word1, word2, similarity);
+						if(similarity==null || similarity.isNaN()) continue;
+						similarityFromCache = CacheEntry.getInstance(cacheKey);
+						similarityFromCache.setValue(similarity.toString());
+						HibernateUtil.save(similarityFromCache);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+			}else{
+				similarity = Double.parseDouble(similarityFromCache.getValue());
 			}
 			
 			results.add(similarity);
 			
-			String featureName = msr.getMSRName()+"-"+resource.getResourceName();
+			String featureName = "MSR_"+msr.getMSRName()+"-"+resource.getResourceName();
 			addFeature(example, featureName, similarity);
+			
+			MLExample msrResourceExample = MLExample.getInstanceForLink(example.getRelatedPhraseLink(), featureName);
+			msrResourceExample.setExpectedClass(example.getExpectedClass());
+			msrResourceExample.setPredictedClass(similarity);
+			MLExample.saveExample(msrResourceExample);
 		}
 		return results;
 	}
@@ -90,6 +103,15 @@ public class SemanticSimilarityBlender {
 		if(value==null) return;
 		FeatureValuePair newFeature = FeatureValuePair.getInstance(featureName, value.toString());
 		MLExampleFeature.setFeatureExample(example, newFeature);
+	}
+	public static List<String> getMSRFeatures(){
+		List<String> features = FeatureValuePair.getAllFeatureNames();
+		ArrayList<String> msrFeatures = new ArrayList<String>();
+		for(String feature : features){
+			if(feature.startsWith("MSR_"))
+				msrFeatures.add(feature);
+		}
+		return msrFeatures;
 	}
 
 

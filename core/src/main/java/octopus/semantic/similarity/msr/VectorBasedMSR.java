@@ -27,7 +27,7 @@ public abstract class VectorBasedMSR implements IMSR{
 		return msrName;
 	}
 	public ResourceType getRequiredResourceType() {
-		return ResourceType.CORPUS;
+		return ResourceType.TEXTUAL_CORPUS;
 	}
 	
 	public VectorBasedMSR() throws Exception{

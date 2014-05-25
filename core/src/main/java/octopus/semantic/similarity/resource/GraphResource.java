@@ -29,7 +29,7 @@ public abstract class GraphResource implements IMSRResource{
 	}
 	protected void loadGraph(String graphFile, GFormat format) throws SLIB_Exception{
 		if(graph==null){
-			URI graph_uri = factory.createURI("http://graph/"+getResourceName()+"/");
+			URI graph_uri = factory.getURI("http://graph/"+getResourceName()+"/");
 			graph  = new GraphMemory(graph_uri);
 		}
 		GDataConf graphconf = new GDataConf(format, graphFile);
@@ -47,7 +47,7 @@ public abstract class GraphResource implements IMSRResource{
 	}
 	
 	public URI getURI(String conceptId) {
-		return factory.createURI("http://graph/"+getResourceName()+"/"+conceptId);
+		return factory.getURI("http://graph/"+getResourceName()+"/"+conceptId);
 	}
 	@Override
 	public String toString(){
