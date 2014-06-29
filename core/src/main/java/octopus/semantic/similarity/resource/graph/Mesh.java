@@ -33,14 +33,15 @@ public class Mesh extends GraphResource{
 		
 
 	}
-	
+	EnhancedGraphLoaderMESHXML loader = new EnhancedGraphLoaderMESHXML();
+    
 	public Mesh() throws Exception{
 	    URI meshURI = getURI("");
 
         meshGraph = new GraphMemory(meshURI);
         String meshFilePath = ConfigurationUtil.getValue("meshPath");
        GDataConf dataMeshXML = new GDataConf(GFormat.MESH_XML, meshFilePath); // the DTD must be located in the same directory
-       GraphLoaderGeneric.populate(dataMeshXML, meshGraph);
+       loader.populate(dataMeshXML, meshGraph);
 
         System.out.println(meshGraph);
 
@@ -125,7 +126,7 @@ public class Mesh extends GraphResource{
 	
 	@Override
 	public String getSearchableContentForWord(String word) {
-		String searchableContent = "TODO:COMPLETE";//meshGraph.getIDForConcept(word);
+		String searchableContent = loader.getIDForConcept(word.toLowerCase());
 //		if(searchableContent == null) searchableContent = word.toLowerCase();
 		System.out.println(word+" mapped to-> "+searchableContent);
 		return searchableContent;

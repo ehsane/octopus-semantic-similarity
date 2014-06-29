@@ -40,6 +40,7 @@ public class MSRPMI extends VectorBasedMSR{
 		double pWord1 = (double)hitWord1 / (double)corpusSize;
 		double pWord2 = (double)hitWord2 / (double)corpusSize;
 		double pWord1And2 = (double)hitWord1And2 / (double)corpusSize;
+		if(pWord2==0 || pWord1==0 || pWord1And2==0) return 0;
 		double sim = Math.log(pWord1And2 / (pWord1 * pWord2));
 		return sim;
 	}

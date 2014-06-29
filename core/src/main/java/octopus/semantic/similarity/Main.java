@@ -10,6 +10,7 @@ import rainbownlp.analyzer.evaluation.regression.RegressionEvaluator;
 import rainbownlp.core.FeatureValuePair;
 import rainbownlp.machinelearning.MLExample;
 import rainbownlp.util.ConfigurationUtil;
+import rainbownlp.util.HibernateUtil;
 
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
@@ -28,6 +29,7 @@ public class Main
     {
     	ConfigurationUtil.init("config.properties");
     	loadProperties();
+    	HibernateUtil.initialize("hibernate-oss.cfg.xml");
     	
         JSAP jsap = new JSAP();
         
@@ -79,7 +81,7 @@ public class Main
         	List<String> msrCombinationCorpusName = SemanticSimilarityBlender.getMSRFeatures();
         	for(String corpus : msrCombinationCorpusName){
         		List<MLExample> examples = MLExample.getAllExamples(corpus, false);
-        		System.out.println("----> "+corpus);
+        		System.out.println("\n----> "+corpus);
         		RegressionEvaluator.getEvaluationResult(examples).printResult();
         	}
         }

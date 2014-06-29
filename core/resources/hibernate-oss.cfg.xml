@@ -57,12 +57,6 @@
         <mapping class="rainbownlp.core.Artifact"/>
 		<mapping class="rainbownlp.core.PhraseLink"/>
 		<mapping class="rainbownlp.core.Phrase"/>
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.ClinicalEvent"/> -->
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.TimexPhrase"/> -->
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.SecTime"/> -->
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.SentencePattern"/> -->
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.analyzer.NormalizedSentence"/> -->
-<!-- 		<mapping class="rainbownlp.i2b2.sharedtask2012.patternminer.GeneralizedSentence"/> -->
 		<mapping class="rainbownlp.machinelearning.MLExampleFeature"/>
 		<mapping class="rainbownlp.machinelearning.MLExample"/>
 		<mapping class="rainbownlp.core.FeatureValuePair"/>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="msrConfigManager" class="octopus.semantic.similarity.msr.MSRConfigManager">
+		<property name="msrList">
+			<list>
+				<ref bean="pmiMSR" />
+<!-- 				<ref bean="lsaRIMSR" /> -->
+<!-- 				<ref bean="lsaMSR" /> -->
+<!-- 				<ref bean="linMSR" /> -->
+<!-- 				<ref bean="tverskyMSR" /> -->
+<!-- 				<ref bean="tversky2MSR" /> -->
+<!-- 				<ref bean="lin2MSR" /> -->
+<!-- 				<ref bean="KyogokuBasicMSR" /> -->
+<!-- 				<ref bean="LeacockMSR" /> -->
+<!-- 				<ref bean="Li2003MSR" /> -->
+<!-- 				<ref bean="PekarStaabMSR" /> -->
+<!-- 				<ref bean="RadaMSR" /> -->
+<!-- 				<ref bean="WuPalmerMSR" /> -->
+			</list>
+		</property>
+	</bean>
+	<bean id="resourceConfigManager"
+		class="octopus.semantic.similarity.resource.ResourceConfigManager">
+		<property name="resourceList">
+			<list>
+<!-- 				<ref bean="meshResource" /> -->
+				<ref bean="yahooResource" />
+				<ref bean="bioNLPResource" />
+<!-- 				<ref bean="wordnetResource" /> -->
+				<ref bean="reutersResource" />
+				<ref bean="pubmedSystematicReviewsResource"/>
+<!-- 				<ref bean="pubmedClinicalJournalsResource"/> -->
+				<ref bean="pubmedNurseJournalsResource"/>
+				<ref bean="pubmedDentalJournalsResource"/>
+			</list>
+		</property>
+	</bean>
+	
+<!-- 	# Corpus Name the regression model -->
+<!-- # Possible values are MAYOSRS/MAYOSRS_MINI/UMNSRS_SIM/UMNSRS_REL/Rubenstein_Goodenough_1965 -->
+<!-- corpusName=MAYOSRS -->
+	
+
+	<!-- Graph Resources -->
+	<bean id="meshResource" class="octopus.semantic.similarity.resource.graph.Mesh" />
+	<bean id="wordnetResource" class="octopus.semantic.similarity.resource.graph.WordNet" />
+
+	<!-- Search engine Resources -->
+	<bean id="yahooResource"
+		class="octopus.semantic.similarity.resource.corpus.YahooAsCorpus" />
+
+	<bean id="bioNLPResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg type="java.lang.String">
+			<value>BioNLP</value>
+		</constructor-arg>
+		<constructor-arg type="java.lang.String">
+			<value>f:\\corpora\\BioNLP-ST_2011_genia_train_data_rev1</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="reutersResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg value="Reuters" index="0" />
+		<constructor-arg value="F:\corpora\reuters21578" index="1" />
+		<constructor-arg value="SGM" index="2" />
+	</bean>
+	
+	<bean id="pubmedSystematicReviewsResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg value="PubmedSystematicReviews" index="0" />
+		<constructor-arg value="F:\corpora\pubmed_result_systematic_reviews.txt" index="1" />
+		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
+	</bean>
+	<bean id="pubmedClinicalJournalsResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg value="PubmedClinicalJournalsReviews" index="0" />
+		<constructor-arg value="F:\corpora\pubmed_clinical_journals.txt" index="1" />
+		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
+	</bean>
+	<bean id="pubmedNurseJournalsResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg value="PubmedNurseJournalsReviews" index="0" />
+		<constructor-arg value="F:\corpora\pubmed_nurse_journals.txt" index="1" />
+		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
+	</bean>
+	<bean id="pubmedDentalJournalsResource"
+		class="octopus.semantic.similarity.resource.TextualCorpusResource">
+		<constructor-arg value="PubmedDentalJournalsReviews" index="0" />
+		<constructor-arg value="F:\corpora\pubmed_dental_journals.txt" index="1" />
+		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
+	</bean>
+
+	<!-- Graph MSRs -->
+	<bean id="linMSR" class="octopus.semantic.similarity.msr.graph.MSRLin" />
+	<bean id="lin2MSR" class="octopus.semantic.similarity.msr.graph.MSRLin2" />
+	<bean id="tverskyMSR" class="octopus.semantic.similarity.msr.graph.MSRTversky" />
+	<bean id="tversky2MSR" class="octopus.semantic.similarity.msr.graph.MSRTversky2" />
+	<bean id="KyogokuBasicMSR" class="octopus.semantic.similarity.msr.graph.MSRKyogokuBasic" />
+	<bean id="LeacockMSR" class="octopus.semantic.similarity.msr.graph.MSRLeacock" />
+	<bean id="Li2003MSR" class="octopus.semantic.similarity.msr.graph.MSRLi2003" />
+	<bean id="PekarStaabMSR" class="octopus.semantic.similarity.msr.graph.MSRPekarStaab" />
+	<bean id="RadaMSR" class="octopus.semantic.similarity.msr.graph.MSRRada" />
+	<bean id="WuPalmerMSR" class="octopus.semantic.similarity.msr.graph.MSRWuPalmer" />
+
+	<bean id="pmiMSR" class="octopus.semantic.similarity.msr.statistics.MSRPMI" />
+	<bean id="lsaRIMSR"
+		class="octopus.semantic.similarity.msr.vector.MSRLSARandomIndexing" />
+	<bean id="lsaMSR" class="octopus.semantic.similarity.msr.vector.MSRLSA" />
+</beans>

@@ -49,7 +49,7 @@ public class WordNet extends GraphResource{
 		database =  Dictionary.getInstance();
 	}
 	
-	private void loadSenseIdMap(String dataFile) {
+	private void loadSenseIdMap(String dataFile) { 
 		List<String> lines = FileUtil.loadLineByLine(dataFile);
 		
 		for(int i=29;i<lines.size();i++){
@@ -74,6 +74,15 @@ public class WordNet extends GraphResource{
 	public String getSearchableContentForWord(String word) {
 		try {
 			IndexWord indexWord = database.getIndexWord(POS.NOUN, word);
+			if(indexWord==null){
+				database.getIndexWord(POS.ADJECTIVE, word);
+			}
+			if(indexWord==null){
+				database.getIndexWord(POS.ADVERB, word);
+			}
+			if(indexWord==null){
+				database.getIndexWord(POS.VERB, word);
+			}
 			Synset[] synsets = indexWord.getSenses();
 			if(synsets == null || synsets.length==0){
 				System.out.println("No sense found for: "+word);
@@ -87,7 +96,8 @@ public class WordNet extends GraphResource{
 			}
 			System.out.println("Word: "+word+" mapped to sense Id : "+offset);
 			return offset;
-		} catch (JWNLException e) {
+		} catch (Exception e) {
+			System.out.println("couldn't find word in wordnet: "+word);
 			e.printStackTrace();
 			return null;
 		}

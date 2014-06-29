@@ -87,62 +87,29 @@ public class MSRLSA extends VectorBasedMSR implements SpellCheckListener {
 	public MSRLSA() throws Exception {
 		super();
 	}
-	VectorStoreReaderLucene vecReader = null;
 	
 	static Logger logger = Logger.getLogger("MSRLSA");
-	LuceneUtils luceneUtils = null;
-	FlagConfig flagConfig = null;
 	public double calculateSimilarity(TextualCorpusResource resource, String word1,
 			String word2) throws IOException {
-		if(vecReader==null)
-			initVectorReader(resource.getLuceneIndexFile());
-		
 
-		Vector vec1 = CompoundVectorBuilder.getQueryVectorFromString(vecReader,
-				luceneUtils, flagConfig, word1);
-		Vector vec2 = CompoundVectorBuilder.getQueryVectorFromString(vecReader,
-				luceneUtils, flagConfig, word2);
+		Vector vec1 = resource.getWordVector(word1, "svd_termvectors.bin", "svd_docvectors.bin");
+		Vector vec2 = resource.getWordVector(word2, "svd_termvectors.bin", "svd_docvectors.bin");
 		vec1.normalize();
 		vec2.normalize();
-		vecReader.close();
 		
 		double simScore = vec1.measureOverlap(vec2);
 
 		return simScore;
 	}
 
-	private void initVectorReader(String luceneIndexPath) throws IOException {
-		flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+luceneIndexPath+
-				" -termvectorsfile svd_termvectors.bin -docvectorsfile svd_docvectors");
-		
-		try {
-			vecReader = new VectorStoreReaderLucene(flagConfig.termvectorsfile(), flagConfig);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Failed to open vector store from file: " + flagConfig.queryvectorfile());
-			throw e;
-		}
-	}
-
 	public double calculateSimilarity(IMSRResource resource, String word1,
 			String word2) throws IOException {
-		return calculateSimilarity((CorpusResource)resource, word1, word2);
+		return calculateSimilarity((TextualCorpusResource)resource, word1, word2);
 	}
 
 	@Override
 	public String getMSRName() {
 		return "LSA";
 	}
-	
-	
-	public Vector getWordVector(TextualCorpusResource resource, String word) throws IOException{
-		if(vecReader==null)
-			initVectorReader(resource.getLuceneIndexFile());
-		
-
-		Vector vec = CompoundVectorBuilder.getQueryVectorFromString(vecReader,
-				luceneUtils, flagConfig, word);
-		return vec;
- 	}
-
 
 }

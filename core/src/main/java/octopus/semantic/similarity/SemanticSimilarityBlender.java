@@ -5,7 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import octopus.semantic.similarity.msr.IMSR;
+import octopus.semantic.similarity.msr.MSRConfigManager;
 import octopus.semantic.similarity.resource.IMSRResource;
+import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
+import octopus.semantic.similarity.resource.ResourceConfigManager;
+
+import org.apache.log4j.lf5.LogLevel;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+
 import rainbownlp.core.FeatureValuePair;
 import rainbownlp.machinelearning.MLExample;
 import rainbownlp.machinelearning.MLExampleFeature;
@@ -27,24 +35,19 @@ public class SemanticSimilarityBlender {
 	 	= new ArrayList<SimpleEntry<IMSR,IMSRResource>>(); 
 	
 	public static void initialize() throws Exception{
-		ConfigurationUtil.init("config.properties");
-		String[] msrsClassNames = ConfigurationUtil.getArrayValues("msrs");
-		String[] resourcesClassNames = ConfigurationUtil.getArrayValues("resources");
+		ClassPathResource res = new ClassPathResource("config.xml");
+		XmlBeanFactory factory = new XmlBeanFactory(res);
+		MSRConfigManager msrConfigManager = (MSRConfigManager)factory.getBean("msrConfigManager");
+		ResourceConfigManager resourceConfigManager = (ResourceConfigManager)factory.getBean("resourceConfigManager");
 		
-		getMsrResorceCombinations().clear();
-		for(String msrClassName : msrsClassNames){
-			IMSR msr = (IMSR) Class.forName(msrClassName).newInstance();
-			msrs.add(msr);
-		}
-		for(String resourceClassName: resourcesClassNames){
-			IMSRResource resource = (IMSRResource) Class.forName(resourceClassName).newInstance();
-			resources.add(resource);
-		}
+		msrs = msrConfigManager.getMsrList();
+		resources = resourceConfigManager.getResourceList();
 		for(IMSRResource resource: resources){
 			for(IMSR msr  : msrs){
-				if(msr.getRequiredResourceType().equals(resource.getResourceType())){
+				if(msr.getRequiredResourceType().equals(resource.getResourceType())
+						|| (msr.getRequiredResourceType()==ResourceType.CORPUS && resource.getResourceType()==ResourceType.TEXTUAL_CORPUS)){
 					SimpleEntry<IMSR, IMSRResource> newCombination = new SimpleEntry<IMSR, IMSRResource>(msr, resource);
-					getMsrResorceCombinations().add(newCombination);
+					msrResorceCombinations.add(newCombination);
 				}
 			}
 		}
@@ -73,7 +76,8 @@ public class SemanticSimilarityBlender {
 			if(similarityFromCache == null) {
 					try {
 						similarity = msr.calculateSimilarity(resource, word1, word2);
-						if(similarity==null || similarity.isNaN()) continue;
+						System.out.println("Similarity "+cacheKey+" : "+similarity);
+						if(similarity==null || similarity.isNaN()  || similarity.isInfinite()) continue;
 						similarityFromCache = CacheEntry.getInstance(cacheKey);
 						similarityFromCache.setValue(similarity.toString());
 						HibernateUtil.save(similarityFromCache);

@@ -24,26 +24,11 @@ public class MSRLSARandomIndexing extends VectorBasedMSR{
 
 	public double calculateSimilarity(TextualCorpusResource resource, String word1,
 			String word2) throws IOException {
-		LuceneUtils luceneUtils = null;
+		Vector vec1 = resource.getWordVector(word1, "termvectors.bin", "docvectors.bin");
+		Vector vec2 = resource.getWordVector(word2, "termvectors.bin", "docvectors.bin");
 
-		VectorStoreReaderLucene vecReader = null;
-		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+resource.getLuceneIndexFile()
-				+" -termvectorsfile termvectors.bin");
-		
-		try {
-			vecReader = new VectorStoreReaderLucene(flagConfig.termvectorsfile(), flagConfig);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Failed to open vector store from file: " + flagConfig.queryvectorfile());
-			throw e;
-		}
-
-		Vector vec1 = CompoundVectorBuilder.getQueryVectorFromString(vecReader,
-				luceneUtils, flagConfig, word1);
-		Vector vec2 = CompoundVectorBuilder.getQueryVectorFromString(vecReader,
-				luceneUtils, flagConfig, word2);
 		vec1.normalize();
 		vec2.normalize();
-		vecReader.close();
 		
 		double simScore = vec1.measureOverlap(vec2);
 

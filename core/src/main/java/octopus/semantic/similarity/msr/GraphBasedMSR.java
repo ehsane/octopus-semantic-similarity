@@ -1,7 +1,6 @@
 package octopus.semantic.similarity.msr;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 
 import octopus.semantic.similarity.resource.GraphResource;
@@ -10,9 +9,6 @@ import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
 
 import org.openrdf.model.URI;
 
-import rainbownlp.machinelearning.MLExample;
-import rainbownlp.util.HibernateUtil;
-import slib.sglib.model.graph.G;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
 import slib.sml.sm.core.metrics.ic.utils.ICconf;
@@ -77,7 +73,17 @@ public abstract class GraphBasedMSR implements IMSR{
 	}
 	public double calculateSimilarity(IMSRResource resource, String word1,
 			String word2) throws SLIB_Ex_Critic, IOException {
-		return calculateSimilarity((GraphResource)resource, word1, word2);
+		String[] words1 = word1.split(" ");
+		String[] words2 = word2.split(" ");
+		Double count = 0.0;
+		Double totalSimilarity=0.0;
+		for(String w1: words1)
+			for(String w2: words2){
+				totalSimilarity += calculateSimilarity((GraphResource)resource, w1, w2);
+				count++;
+			}
+		if(count ==0 ) return 0;
+		return totalSimilarity/count;
 	}
 	
 
