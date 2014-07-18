@@ -22,14 +22,10 @@ import com.martiansoftware.jsap.JSAPResult;
  */
 public class Main 
 {
-	static Properties properties = new Properties();
-	 
 
     public static void main( String[] args ) throws Exception
     {
-    	ConfigurationUtil.init("config.properties");
-    	loadProperties();
-    	HibernateUtil.initialize("hibernate-oss.cfg.xml");
+    	ConfigurationUtil.init("config.properties", "hibernate-oss.cfg.xml");
     	
         JSAP jsap = new JSAP();
         
@@ -87,13 +83,5 @@ public class Main
         }
 
     }
-    
-	private static void loadProperties() {
-		try {
-	           //load a properties file from class path, inside static method
-			properties.load(Main.class.getClassLoader().getResourceAsStream("config.properties"));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-	    }
-	}
+
 }

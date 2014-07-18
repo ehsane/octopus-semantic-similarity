@@ -13,9 +13,10 @@ import rainbownlp.core.Phrase;
 import rainbownlp.core.PhraseLink;
 import rainbownlp.machinelearning.LearnerEngine;
 import rainbownlp.machinelearning.MLExample;
+import rainbownlp.util.ConfigurationUtil;
 
 public class HybridBAMSR extends LearnerEngine {
-	static String modelName = Main.properties.getProperty("model_name");
+	static String modelName = ConfigurationUtil.getValue("model_name");
 	LearnerEngine regressionEngine = MLAlgorithmFactory.getRegressionEngine(modelName);
 
 	static Logger logger = Logger.getLogger("HybridBAMSR");
