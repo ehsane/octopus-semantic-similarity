@@ -11,8 +11,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import rainbownlp.util.ConfigurationUtil;
-import rainbownlp.util.FileUtil;
 
+/**
+ * Generic loader to parse Comma-Separated Value (CSV) format
+ * Three column indices need to be passed in the constructor: 1. expected rating, 2. word1 and 3. word2 
+ * @author eemadzadeh
+ *
+ */
 public class CSVBenchmarkLoader extends BenchmarkSetLoader {
 
 	private String fileName;
