@@ -2,46 +2,112 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<bean id="msrConfigManager" class="octopus.semantic.similarity.msr.MSRConfigManager">
+	<bean id="configuration" class="octopus.semantic.similarity.Configuration">
+		<property name="trimBeforeSimilarity"><value type="boolean">false</value></property>
 		<property name="msrList">
 			<list>
 				<ref bean="pmiMSR" />
-<!-- 				<ref bean="lsaRIMSR" /> -->
-<!-- 				<ref bean="lsaMSR" /> -->
-<!-- 				<ref bean="linMSR" /> -->
-<!-- 				<ref bean="tverskyMSR" /> -->
-<!-- 				<ref bean="tversky2MSR" /> -->
-<!-- 				<ref bean="lin2MSR" /> -->
-<!-- 				<ref bean="KyogokuBasicMSR" /> -->
-<!-- 				<ref bean="LeacockMSR" /> -->
-<!-- 				<ref bean="Li2003MSR" /> -->
-<!-- 				<ref bean="PekarStaabMSR" /> -->
-<!-- 				<ref bean="RadaMSR" /> -->
-<!-- 				<ref bean="WuPalmerMSR" /> -->
+<!-- 				<ref bean="pmiNGD" /> -->
+				<!-- <ref bean="lsaRIMSR" /> -->
+				<ref bean="lsaMSR" />
+				<ref bean="lsaMSRW2V" />
+				<!-- <ref bean="linMSR" /> -->
+				<!-- <ref bean="tverskyMSR" /> -->
+				<!-- <ref bean="tversky2MSR" /> -->
+				<!-- <ref bean="lin2MSR" /> -->
+				<!-- <ref bean="KyogokuBasicMSR" /> -->
+				<!-- <ref bean="LeacockMSR" /> -->
+				<!-- <ref bean="Li2003MSR" /> -->
+				<!-- <ref bean="PekarStaabMSR" /> -->
+				<!-- <ref bean="RadaMSR" /> -->
+				<!-- <ref bean="WuPalmerMSR" /> -->
 			</list>
 		</property>
-	</bean>
-	<bean id="resourceConfigManager"
-		class="octopus.semantic.similarity.resource.ResourceConfigManager">
 		<property name="resourceList">
 			<list>
-<!-- 				<ref bean="meshResource" /> -->
+				<!-- <ref bean="meshResource" /> -->
 				<ref bean="yahooResource" />
-				<ref bean="bioNLPResource" />
-<!-- 				<ref bean="wordnetResource" /> -->
-				<ref bean="reutersResource" />
-				<ref bean="pubmedSystematicReviewsResource"/>
+<!-- 				<ref bean="bioNLPResource" /> -->
+				<!-- <ref bean="wordnetResource" /> -->
+				<!-- <ref bean="reutersResource" /> -->
+				<ref bean="pubmedSystematicReviewsResource" />
 <!-- 				<ref bean="pubmedClinicalJournalsResource"/> -->
-				<ref bean="pubmedNurseJournalsResource"/>
-				<ref bean="pubmedDentalJournalsResource"/>
+				<ref bean="pubmedNurseJournalsResource" />
+				<ref bean="pubmedDentalJournalsResource" />
 			</list>
 		</property>
+		<property name="benchmarkLoader">
+			<ref bean="benchmarkUMNSRSRel" />
+<!-- 			<ref bean="benchmarkADR" /> -->
+		</property>
+	</bean>
+
+	<!-- Benchmarks -->
+	<bean id="benchmarkADR"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="ADRSIM" index="0" />
+		<constructor-arg value="data/benchmarks/fortrain-adr.csv"
+			index="1" />
+		<constructor-arg value="2" index="2" />
+		<constructor-arg value="0" index="3" />
+		<constructor-arg value="1" index="4" />
+	</bean>
+	<bean id="benchmarkMAYOSRS"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="MAYOSRS" index="0" />
+		<constructor-arg value="data/benchmarks/MayoSRS.csv"
+			index="1" />
+		<constructor-arg value="0" index="2" />
+		<constructor-arg value="3" index="3" />
+		<constructor-arg value="4" index="4" />
+	</bean>
+	<bean id="benchmarkMiniMAYOSRS"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="MAYOSRS_MINI" index="0" />
+		<constructor-arg value="data/benchmarks/MiniMayoSRS.csv"
+			index="1" />
+		<constructor-arg value="0" index="2" />
+		<constructor-arg value="4" index="3" />
+		<constructor-arg value="5" index="4" />
+	</bean>
+	<bean id="benchmarkRG65"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="Rubenstein_Goodenough_1965" index="0" />
+		<constructor-arg value="data/benchmarks/Rubenstein_Goodenough_1965.csv"
+			index="1" />
+		<constructor-arg value="2" index="2" />
+		<constructor-arg value="0" index="3" />
+		<constructor-arg value="1" index="4" />
+	</bean>
+	<bean id="benchmarkUMNSRSRel"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="UMNSRS_REL" index="0" />
+		<constructor-arg value="data/benchmarks/UMNSRS_relatedness.csv"
+			index="1" />
+		<constructor-arg value="0" index="2" />
+		<constructor-arg value="2" index="3" />
+		<constructor-arg value="3" index="4" />
+	</bean>
+	<bean id="benchmarkUMNSRSSim"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="UMNSRS_SIM" index="0" />
+		<constructor-arg value="data/benchmarks/UMNSRS_similarity.csv"
+			index="1" />
+		<constructor-arg value="0" index="2" />
+		<constructor-arg value="2" index="3" />
+		<constructor-arg value="3" index="4" />
+	</bean>
+	<bean id="benchmarkWS353"
+		class="octopus.semantic.similarity.benchmark.loader.CSVBenchmarkLoader">
+		<constructor-arg value="WS_353" index="0" />
+		<constructor-arg value="data/benchmarks/wordsim353/combined.csv"
+			index="1" />
+		<constructor-arg value="2" index="2" />
+		<constructor-arg value="0" index="3" />
+		<constructor-arg value="1" index="4" />
 	</bean>
 	
-<!-- 	# Corpus Name the regression model -->
-<!-- # Possible values are MAYOSRS/MAYOSRS_MINI/UMNSRS_SIM/UMNSRS_REL/Rubenstein_Goodenough_1965 -->
-<!-- corpusName=MAYOSRS -->
-	
+
 
 	<!-- Graph Resources -->
 	<bean id="meshResource" class="octopus.semantic.similarity.resource.graph.Mesh" />
@@ -57,39 +123,48 @@
 			<value>BioNLP</value>
 		</constructor-arg>
 		<constructor-arg type="java.lang.String">
-			<value>f:\\corpora\\BioNLP-ST_2011_genia_train_data_rev1</value>
+			<value>/media/ehsan/NewHard/corpora/BioNLP-ST_2011_genia_train_data_rev1</value>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="reutersResource"
 		class="octopus.semantic.similarity.resource.TextualCorpusResource">
 		<constructor-arg value="Reuters" index="0" />
-		<constructor-arg value="F:\corpora\reuters21578" index="1" />
+		<constructor-arg value="/media/ehsan/NewHard/corpora/reuters21578"
+			index="1" />
 		<constructor-arg value="SGM" index="2" />
 	</bean>
-	
+
 	<bean id="pubmedSystematicReviewsResource"
 		class="octopus.semantic.similarity.resource.TextualCorpusResource">
-		<constructor-arg value="PubmedSystematicReviews" index="0" />
-		<constructor-arg value="F:\corpora\pubmed_result_systematic_reviews.txt" index="1" />
+		<constructor-arg value="PubmedSystematicReviews"
+			index="0" />
+		<constructor-arg value="/media/ehsan/NewHard/corpora/pubmed_result_systematic_reviews.txt"
+			index="1" />
 		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
 	</bean>
 	<bean id="pubmedClinicalJournalsResource"
 		class="octopus.semantic.similarity.resource.TextualCorpusResource">
-		<constructor-arg value="PubmedClinicalJournalsReviews" index="0" />
-		<constructor-arg value="F:\corpora\pubmed_clinical_journals.txt" index="1" />
+		<constructor-arg value="PubmedClinicalJournalsReviews"
+			index="0" />
+		<constructor-arg value="/media/ehsan/NewHard/corpora/pubmed_clinical_journals.txt"
+			index="1" />
 		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
 	</bean>
 	<bean id="pubmedNurseJournalsResource"
 		class="octopus.semantic.similarity.resource.TextualCorpusResource">
-		<constructor-arg value="PubmedNurseJournalsReviews" index="0" />
-		<constructor-arg value="F:\corpora\pubmed_nurse_journals.txt" index="1" />
+		<constructor-arg value="PubmedNurseJournalsReviews"
+			index="0" />
+		<constructor-arg value="/media/ehsan/NewHard/corpora/pubmed_nurse_journals.txt"
+			index="1" />
 		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
 	</bean>
 	<bean id="pubmedDentalJournalsResource"
 		class="octopus.semantic.similarity.resource.TextualCorpusResource">
-		<constructor-arg value="PubmedDentalJournalsReviews" index="0" />
-		<constructor-arg value="F:\corpora\pubmed_dental_journals.txt" index="1" />
+		<constructor-arg value="PubmedDentalJournalsReviews"
+			index="0" />
+		<constructor-arg value="/media/ehsan/NewHard/corpora/pubmed_dental_journals.txt"
+			index="1" />
 		<constructor-arg value="PUBMED_ABSTRACTS" index="2" />
 	</bean>
 
@@ -106,7 +181,10 @@
 	<bean id="WuPalmerMSR" class="octopus.semantic.similarity.msr.graph.MSRWuPalmer" />
 
 	<bean id="pmiMSR" class="octopus.semantic.similarity.msr.statistics.MSRPMI" />
-	<bean id="lsaRIMSR"
+	<bean id="pmiNGD" class="octopus.semantic.similarity.msr.statistics.MSRNGD" />
+		<bean id="lsaRIMSR"
 		class="octopus.semantic.similarity.msr.vector.MSRLSARandomIndexing" />
 	<bean id="lsaMSR" class="octopus.semantic.similarity.msr.vector.MSRLSA" />
+	<bean id="lsaMSRW2V" class="octopus.semantic.similarity.msr.vector.MSRLSAW2V" />
+		
 </beans>

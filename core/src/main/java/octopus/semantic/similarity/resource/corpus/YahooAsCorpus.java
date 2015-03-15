@@ -4,6 +4,7 @@ import octopus.semantic.similarity.resource.CorpusResource;
 import rainbownlp.util.StringUtil;
 
 import com.jellymold.boss.WebSearch;
+import com.jellymold.boss.util.BOSSException;
 
 public class YahooAsCorpus extends CorpusResource{
 	static WebSearch ws = new WebSearch();
@@ -27,8 +28,14 @@ public class YahooAsCorpus extends CorpusResource{
 	}
 	
 	public long getMatchedDocsCount(String word){
-		ws.search(word);
-		return ws.getTotalResults();
+		try {
+			ws.search(word);
+			return ws.getTotalResults();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 	public long getMatchedDocsCount(String[] words){

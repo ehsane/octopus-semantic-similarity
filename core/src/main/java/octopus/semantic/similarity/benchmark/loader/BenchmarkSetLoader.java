@@ -6,5 +6,7 @@ import java.util.AbstractMap.SimpleEntry;
 public abstract class BenchmarkSetLoader {
 	public abstract List<SimpleEntry<Double, SimpleEntry<String, String>>>
 				loadEntries() throws Exception;
+
+	public abstract String getName();
 	
 }

@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>octopus-ss</groupId>
 	<artifactId>octopus-ss</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<!-- Shared version number properties -->
 	<properties>
 		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
-	  	<maven.compiler.source>1.7</maven.compiler.source>
-  		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
 	<build>
@@ -30,31 +30,54 @@
 					<target />
 				</configuration>
 			</plugin>
-			<plugin>
-			    <artifactId>maven-assembly-plugin</artifactId>
-			    <executions>
-			      <execution>
-			        <phase>package</phase>
-			        <goals>
-			          <goal>single</goal>
-			        </goals>
-			      </execution>
-			    </executions>
-			    <configuration>
-			      <descriptorRefs>
-			        <descriptorRef>jar-with-dependencies</descriptorRef>
-			      </descriptorRefs>
-			    </configuration>
-			  </plugin>
+			<!-- <plugin> -->
+			<!-- <artifactId>maven-assembly-plugin</artifactId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>single</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <configuration> -->
+			<!-- <descriptorRefs> -->
+			<!-- <descriptorRef>jar-with-dependencies</descriptorRef> -->
+			<!-- </descriptorRefs> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>RainbowNLP</groupId>
+			<groupId>com.github.rainbownlp</groupId>
 			<artifactId>RainbowNLP</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>2.6.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -62,38 +85,27 @@
 			<version>1.7.2</version>
 		</dependency>
 
-
 		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
-			<artifactId>slib-utils</artifactId>
-			<version>0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
-			<artifactId>sglib-model-impl</artifactId>
-			<version>0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
-			<artifactId>slib-indexer</artifactId>
-			<version>0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
-			<artifactId>sglib-algo</artifactId>
-			<version>0.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
-			<artifactId>sglib-io</artifactId>
-			<version>0.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.lgi2p.kid</groupId>
+			<groupId>com.github.sharispe</groupId>
 			<artifactId>slib-sml</artifactId>
-			<version>0.8</version>
+			<version>0.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency> <!-- Spark dependency -->
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-core_2.10</artifactId>
+			<version>1.1.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -119,7 +131,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>pitt.search</groupId>

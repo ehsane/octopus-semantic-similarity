@@ -2,23 +2,21 @@ package octopus.semantic.similarity;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import octopus.semantic.similarity.msr.IMSR;
-import octopus.semantic.similarity.msr.MSRConfigManager;
 import octopus.semantic.similarity.resource.IMSRResource;
 import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
-import octopus.semantic.similarity.resource.ResourceConfigManager;
-
-import org.apache.log4j.lf5.LogLevel;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-
 import rainbownlp.core.FeatureValuePair;
 import rainbownlp.machinelearning.MLExample;
 import rainbownlp.machinelearning.MLExampleFeature;
-import rainbownlp.util.ConfigurationUtil;
 import rainbownlp.util.HibernateUtil;
+import rainbownlp.util.StringUtil;
 import rainbownlp.util.caching.CacheEntry;
 
 /**
@@ -32,16 +30,12 @@ public class SemanticSimilarityBlender {
 	static List<IMSRResource> resources = new ArrayList<IMSRResource>();
 	
 	private static List<SimpleEntry<IMSR, IMSRResource>> msrResorceCombinations
-	 	= new ArrayList<SimpleEntry<IMSR,IMSRResource>>(); 
+	 	= new ArrayList<SimpleEntry<IMSR,IMSRResource>>();
+	private static boolean synchronous = true; 
 	
 	public static void initialize() throws Exception{
-		ClassPathResource res = new ClassPathResource("config.xml");
-		XmlBeanFactory factory = new XmlBeanFactory(res);
-		MSRConfigManager msrConfigManager = (MSRConfigManager)factory.getBean("msrConfigManager");
-		ResourceConfigManager resourceConfigManager = (ResourceConfigManager)factory.getBean("resourceConfigManager");
-		
-		msrs = msrConfigManager.getMsrList();
-		resources = resourceConfigManager.getResourceList();
+		msrs = Configuration.config.getMsrList();
+		resources = Configuration.config.getResourceList();
 		for(IMSRResource resource: resources){
 			for(IMSR msr  : msrs){
 				if(msr.getRequiredResourceType().equals(resource.getResourceType())
@@ -56,49 +50,115 @@ public class SemanticSimilarityBlender {
 	
 	/**
 	 * calculate semantic similarity using each combination of MSR and resource
+	 * @param corpusName 
 	 * 
 	 * @param word1
 	 * @param word2
 	 * @return an array of similarities corresponding to array of combinations
 	 * @throws Exception 
 	 */
-	public static List<Double> calculateAllSimilarities(MLExample example, String word1, String word2) throws Exception{
+	public static HashMap<String, Double> calculateAllSimilarities(String corpusName,
+			MLExample example, String word1, String word2) throws Exception{
 		if(msrResorceCombinations.size()==0)
 			initialize();
-		List<Double> results = new ArrayList<Double>();
+		HashMap<String, Double> results = new HashMap<String, Double>();
+		if(Configuration.config.isTrimBeforeSimilarity()){
+			word1 = StringUtil.removeNonAlphaAndLowercase(word1);
+			word2 = StringUtil.removeNonAlphaAndLowercase(word2);
+		}
+		
+		final String word1Trimmed = word1;
+		final String word2Trimmed = word2;;
+		
+		MLExampleFeature.deleteExampleFeatures(example);
+	    ExecutorService executor = Executors.newFixedThreadPool(10);
+	    HashMap<String, Future<Double>> simResults = new HashMap<String, Future<Double>>();
 		for(int i=0;i<msrResorceCombinations.size();i++){
 			SimpleEntry<IMSR, IMSRResource> combination = msrResorceCombinations.get(i);
-			IMSR msr = combination.getKey();
-			IMSRResource resource = combination.getValue();
-			String cacheKey = "MSR-"+msr.getMSRName()+"-"+resource.getResourceName()+"-"+word1+"-"+word2;
+			final IMSR msr = combination.getKey();
+			final IMSRResource resource = combination.getValue();
+			String wordsPair = word1Trimmed+"-"+word2Trimmed;
+			if(wordsPair.length()>100) 
+				wordsPair = StringUtil.getStringDigest(word1Trimmed+"-"+word2Trimmed);
+			final String cacheKey = "MSR-"+msr.getMSRName()+"-"+resource.getResourceName()+"-"+wordsPair;
 			CacheEntry similarityFromCache = CacheEntry.get(cacheKey);
-			Double similarity = 0D;
+			String featureName = "MSR_"+msr.getMSRName()+"-"+resource.getResourceName();
 			if(similarityFromCache == null) {
 					try {
-						similarity = msr.calculateSimilarity(resource, word1, word2);
-						System.out.println("Similarity "+cacheKey+" : "+similarity);
-						if(similarity==null || similarity.isNaN()  || similarity.isInfinite()) continue;
-						similarityFromCache = CacheEntry.getInstance(cacheKey);
-						similarityFromCache.setValue(similarity.toString());
-						HibernateUtil.save(similarityFromCache);
+						if(synchronous ){
+							Double similarity = msr.calculateSimilarity(resource, word1Trimmed, word2Trimmed);
+							addSimilarityForExample(example, featureName, similarity, corpusName);
+							CacheEntry.createInstance(cacheKey, similarity.toString());
+							results.put(featureName, similarity);
+						}else{
+							Callable<Double> simCalculator = new  Callable<Double>() {
+						          @Override
+						          public Double call() throws Exception {
+						        	  Double similarity = msr.calculateSimilarity(resource, word1Trimmed, word2Trimmed);
+										System.out.println("Similarity "+cacheKey+" : "+similarity);
+										if(similarity==null || similarity.isNaN()  || similarity.isInfinite()) similarity=0.0;
+										CacheEntry similarityFromCache = CacheEntry.getInstance(cacheKey);
+										similarityFromCache.setValue(similarity.toString());
+										HibernateUtil.save(similarityFromCache);
+										return similarity;
+							      }
+						        };
+							
+							simResults.put(featureName, executor.submit(simCalculator));
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 			}else{
-				similarity = Double.parseDouble(similarityFromCache.getValue());
+				Double similarity = Double.parseDouble(similarityFromCache.getValue());
+				addSimilarityForExample(example, featureName, similarity, corpusName);
+				results.put(featureName, similarity);
 			}
-			
-			results.add(similarity);
-			
-			String featureName = "MSR_"+msr.getMSRName()+"-"+resource.getResourceName();
-			addFeature(example, featureName, similarity);
-			
-			MLExample msrResourceExample = MLExample.getInstanceForLink(example.getRelatedPhraseLink(), featureName);
-			msrResourceExample.setExpectedClass(example.getExpectedClass());
-			msrResourceExample.setPredictedClass(similarity);
-			MLExample.saveExample(msrResourceExample);
+		}
+		if(!synchronous){
+			for(String featureName : simResults.keySet()){
+				Double similarity = simResults.get(featureName).get();
+				addSimilarityForExample(example, featureName, similarity, corpusName);
+				results.put(featureName, similarity);
+			}
 		}
 		return results;
+	}
+
+	
+	public static HashMap<String, Double> calculateAllSimilarities(String word1, String word2) throws Exception{
+		if(msrResorceCombinations.size()==0)
+			initialize();
+		HashMap<String, Double> results = new HashMap<String, Double>();
+		final String word1Trimmed = word1.replaceAll("[^0-9a-zA-Z]+", " ");
+		final String word2Trimmed = word2.replaceAll("[^0-9a-zA-Z]+", " ");
+	    for(int i=0;i<msrResorceCombinations.size();i++){
+	    	SimpleEntry<IMSR, IMSRResource> combination = msrResorceCombinations.get(i);
+	    	final IMSR msr = combination.getKey();
+	    	final IMSRResource resource = combination.getValue();
+	    	String featureName = "MSR_"+msr.getMSRName()+"-"+resource.getResourceName();
+	    	try {
+	    		Double similarity = msr.calculateSimilarity(resource, word1Trimmed, word2Trimmed);
+	    		results.put(featureName, similarity);
+	    	} catch (Exception e) {
+	    		e.printStackTrace();
+	    	}
+	    }
+		return results;
+	}
+
+
+	private static void addSimilarityForExample(MLExample example, String featureName,
+			Double similarity, String corpusName) {
+		addFeature(example, featureName, similarity);
+		
+		MLExample.hibernateSession = null;//force to create a new session
+		// Create example for oneByone evaluation
+		MLExample msrResourceExample = MLExample.getInstanceForLink(example.getRelatedPhraseLink(), 
+				corpusName+"-"+featureName);
+		msrResourceExample.setExpectedClass(example.getExpectedClass());
+		msrResourceExample.setPredictedClass(similarity.toString());
+		MLExample.saveExample(msrResourceExample);
 	}
 
 
@@ -106,6 +166,12 @@ public class SemanticSimilarityBlender {
 			Double value) {
 		if(value==null) return;
 		FeatureValuePair newFeature = FeatureValuePair.getInstance(featureName, value.toString());
+		
+		if(newFeature.getTempFeatureIndex()==-1){
+			newFeature.setTempFeatureIndex(FeatureValuePair.getMinIndexForAttribute(featureName));
+			HibernateUtil.save(newFeature);
+		}
+		
 		MLExampleFeature.setFeatureExample(example, newFeature);
 	}
 	public static List<String> getMSRFeatures(){

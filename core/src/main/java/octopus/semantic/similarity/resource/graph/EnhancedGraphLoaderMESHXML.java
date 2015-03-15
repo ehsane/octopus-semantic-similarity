@@ -20,16 +20,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.GraphLoader;
-import slib.sglib.io.loader.bio.mesh.GraphLoader_MESH_XML;
-import slib.sglib.io.loader.bio.mesh.MeshConcept;
-import slib.sglib.io.loader.bio.mesh.MeshXMLHandler;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.graph.elements.E;
-import slib.sglib.model.impl.graph.elements.Edge;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.GraphLoader;
+import slib.graph.model.graph.G;
+import slib.graph.model.graph.elements.E;
+import slib.graph.model.impl.graph.elements.Edge;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.utils.ex.SLIB_Ex_Critic;
 import slib.utils.ex.SLIB_Exception;
 

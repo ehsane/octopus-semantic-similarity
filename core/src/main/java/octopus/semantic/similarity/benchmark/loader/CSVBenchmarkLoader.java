@@ -24,8 +24,9 @@ public class CSVBenchmarkLoader extends BenchmarkSetLoader {
 	private int ratingIndex;
 	private int word2Index;
 	private int word1Index;
-
-	public CSVBenchmarkLoader(String fileName, int ratingIndex, int word1Index, int word2Index) {
+	String name;
+	public CSVBenchmarkLoader(String pName, String fileName, int ratingIndex, int word1Index, int word2Index) {
+		name = pName;
 		this.fileName = fileName;
 		this.ratingIndex = ratingIndex;
 		this.word1Index = word1Index;
@@ -55,6 +56,11 @@ public class CSVBenchmarkLoader extends BenchmarkSetLoader {
 			}
 		}
 		return entries;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

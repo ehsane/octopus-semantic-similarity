@@ -69,7 +69,7 @@ public abstract class GraphBasedMSR implements IMSR{
 
 	protected double getSimilarity(SM_Engine engine, SMconf smConf, URI word1uri,
 			URI word2uri) throws SLIB_Ex_Critic {
-		return engine.computePairwiseSim(smConf, word1uri, word2uri);
+		return engine.compare(smConf, word1uri, word2uri);
 	}
 	public double calculateSimilarity(IMSRResource resource, String word1,
 			String word2) throws SLIB_Ex_Critic, IOException {
@@ -86,6 +86,13 @@ public abstract class GraphBasedMSR implements IMSR{
 		return totalSimilarity/count;
 	}
 	
-
+	@Override
+	public Double call() throws Exception {
+		if(resource == null ||
+				word1 == null ||
+				word2 == null)
+			throw(new Exception("resource/word1/word2 is null"));
+		return calculateSimilarity(resource, word1, word2);
+	}
 		
 }

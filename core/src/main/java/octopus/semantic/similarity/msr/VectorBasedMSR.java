@@ -1,23 +1,12 @@
 package octopus.semantic.similarity.msr;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
-import octopus.semantic.similarity.resource.GraphResource;
-import octopus.semantic.similarity.resource.IMSRResource;
 import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
-
-import org.openrdf.model.URI;
-
-import rainbownlp.machinelearning.MLExample;
-import slib.sglib.model.graph.G;
-import slib.sml.sm.core.engine.SM_Engine;
-import slib.sml.sm.core.metrics.ic.utils.IC_Conf_Topo;
-import slib.sml.sm.core.metrics.ic.utils.ICconf;
-import slib.sml.sm.core.utils.SMConstants;
-import slib.sml.sm.core.utils.SMconf;
-import slib.utils.ex.SLIB_Ex_Critic;
+import octopus.semantic.similarity.resource.TextualCorpusResource;
+import octopus.semantic.similarity.resource.TextualCorpusResource.TermVectorType;
+import pitt.search.semanticvectors.vectors.Vector;
 
 public abstract class VectorBasedMSR implements IMSR{
 	static Logger logger = Logger.getLogger("VectorBasedMSR");
@@ -29,10 +18,16 @@ public abstract class VectorBasedMSR implements IMSR{
 	public ResourceType getRequiredResourceType() {
 		return ResourceType.TEXTUAL_CORPUS;
 	}
-	
 	public VectorBasedMSR() throws Exception{
 	}
-
+	@Override
+	public Double call() throws Exception {
+		if(resource == null ||
+				word1 == null ||
+				word2 == null)
+			throw(new Exception("resource/word1/word2 is null"));
+		return calculateSimilarity(resource, word1, word2);
+	}
 
 		
 }

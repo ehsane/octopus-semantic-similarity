@@ -6,14 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.didion.jwnl.JWNL;
-import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.dictionary.Dictionary;
 import octopus.semantic.similarity.resource.GraphResource;
 import rainbownlp.util.FileUtil;
-import slib.sglib.io.util.GFormat;
+import slib.graph.io.util.GFormat;
 
 public class WordNet extends GraphResource{
 	HashMap<String, List<String>> wordSenseIdMap = new HashMap<String, List<String>>();

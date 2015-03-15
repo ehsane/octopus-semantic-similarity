@@ -24,12 +24,9 @@ public class MSRLSARandomIndexing extends VectorBasedMSR{
 
 	public double calculateSimilarity(TextualCorpusResource resource, String word1,
 			String word2) throws IOException {
-		Vector vec1 = resource.getWordVector(word1, "termvectors.bin", "docvectors.bin");
-		Vector vec2 = resource.getWordVector(word2, "termvectors.bin", "docvectors.bin");
+		Vector vec1 = resource.getPhraseVector(word1, "termvectors.bin", "docvectors.bin", null);
+		Vector vec2 = resource.getPhraseVector(word2, "termvectors.bin", "docvectors.bin", null);
 
-		vec1.normalize();
-		vec2.normalize();
-		
 		double simScore = vec1.measureOverlap(vec2);
 
 		return simScore;

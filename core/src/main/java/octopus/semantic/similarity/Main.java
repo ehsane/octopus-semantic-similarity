@@ -61,23 +61,27 @@ public class Main
         JSAPResult config = jsap.parse(args);
         String action = config.getString("action");
         HybridBAMSR bamsr = new HybridBAMSR();
-        String corpusName = ConfigurationUtil.getValue("corpusName");
+        String corpusName = Configuration.config.getBenchmarkLoader().getName();
+//        FeatureValuePair.resetIndexes();
+     	bamsr.modelName = ConfigurationUtil.getValue("model_name")+"_"+corpusName;
     	 if(action.equals("train")){
-    		bamsr.train(bamsr.createExamples(corpusName));
+    		List<MLExample> examples = bamsr.createExamples(corpusName);
+    		bamsr.calculateExampleFeatures(corpusName, examples);
+//    		FeatureValuePair.resetIndexes();
+        	bamsr.train(examples);
         }else if(action.equals("crossfold")){
         	FeatureValuePair.resetIndexes();
         	RegressionCrossValidation cv = new RegressionCrossValidation(bamsr);
         	cv.crossValidation(MLExample.getAllExamples(corpusName, false), 2).printResult();
         }else if(action.equals("featureselection")){
-        	RegressionCrossValidation cv = new RegressionCrossValidation(bamsr);
         	FeatureEvaluator fe = new FeatureEvaluator();
-        	fe.evaluateFeatures(cv, MLExample.getAllExamples(corpusName, false));
+//        	fe.evaluateFeatures(bamsr, MLExample.getAllExamples(corpusName, false));
         }else if(action.equals("evaluate_onebyone")){
         	bamsr.createExamples(corpusName);
         	List<String> msrCombinationCorpusName = SemanticSimilarityBlender.getMSRFeatures();
         	for(String corpus : msrCombinationCorpusName){
-        		List<MLExample> examples = MLExample.getAllExamples(corpus, false);
-        		System.out.println("\n----> "+corpus);
+        		List<MLExample> examples = MLExample.getAllExamples(corpusName+"-"+corpus, false);
+        		System.out.println("\n----> "+corpusName+"-"+corpus);
         		RegressionEvaluator.getEvaluationResult(examples).printResult();
         	}
         }

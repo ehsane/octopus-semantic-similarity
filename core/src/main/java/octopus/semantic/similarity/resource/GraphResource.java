@@ -3,13 +3,13 @@ package octopus.semantic.similarity.resource;
 
 import org.openrdf.model.URI;
 
-import slib.sglib.io.conf.GDataConf;
-import slib.sglib.io.loader.GraphLoaderGeneric;
-import slib.sglib.io.util.GFormat;
-import slib.sglib.model.graph.G;
-import slib.sglib.model.impl.graph.memory.GraphMemory;
-import slib.sglib.model.impl.repo.URIFactoryMemory;
-import slib.sglib.model.repo.URIFactory;
+import slib.graph.io.conf.GDataConf;
+import slib.graph.io.loader.GraphLoaderGeneric;
+import slib.graph.io.util.GFormat;
+import slib.graph.model.graph.G;
+import slib.graph.model.impl.graph.memory.GraphMemory;
+import slib.graph.model.impl.repo.URIFactoryMemory;
+import slib.graph.model.repo.URIFactory;
 import slib.sml.sm.core.engine.SM_Engine;
 import slib.utils.ex.SLIB_Ex_Critic;
 import slib.utils.ex.SLIB_Exception;

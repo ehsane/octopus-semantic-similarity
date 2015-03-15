@@ -7,12 +7,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import octopus.semantic.similarity.resource.IMSRResource.ResourceType;
+import octopus.semantic.similarity.resource.TextualCorpusResource.TermVectorType;
 import octopus.semantic.similarity.word2vec.util.LSAFixed;
+import octopus.semantic.similarity.word2vec.util.W2VTermVectorsReader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -41,11 +45,15 @@ import pitt.search.semanticvectors.CompoundVectorBuilder;
 import pitt.search.semanticvectors.FlagConfig;
 import pitt.search.semanticvectors.LuceneUtils;
 import pitt.search.semanticvectors.VectorStoreReaderLucene;
+import pitt.search.semanticvectors.vectors.RealVector;
 import pitt.search.semanticvectors.vectors.Vector;
 
 public class TextualCorpusResource extends CorpusResource{
 	static Logger logger = Logger.getLogger("TextualCorpusResource");
-	
+	public static enum TermVectorType{
+		// expect Word2Vec vector binary file
+		W2V_BINARY, W2V_PLAIN
+	}
 	final ResourceType resourceType = ResourceType.TEXTUAL_CORPUS;
 	private String luceneIndexFile;
 	String rootPath;
@@ -373,12 +381,12 @@ public class TextualCorpusResource extends CorpusResource{
 	private VectorStoreReaderLucene getLuceneTermVectorReader(String termVectorsFile) {
 		if(termVecReader != null) return termVecReader;
 		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+getLuceneIndexFile() + 
-				" -termvectorsfile "+ getLuceneIndexFile()+"/svd_termvectors.bin -docvectorsfile "+  getLuceneIndexFile()+"/svd_docvectors.bin");
+				" -termvectorsfile "+ getLuceneIndexFile()+"/"+termVectorsFile +" -docvectorsfile "+  getLuceneIndexFile()+"/svd_docvectors.bin");
 		
 		try {
 			termVecReader = new VectorStoreReaderLucene(termVectorsFile, flagConfig);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Failed to open vector store from file: " + flagConfig.queryvectorfile());
+			logger.log(Level.SEVERE, "Failed to open vector store from file: " + termVectorsFile);
 		}
 		
 		return termVecReader;
@@ -434,15 +442,73 @@ public class TextualCorpusResource extends CorpusResource{
 		}
 		return 0;
 	}
-	public Vector getWordVector(String word1, String termsVectorsFile, String docVectorsFile) {
+	static HashMap<String, Vector> vectorBuffer = new HashMap<String, Vector>();
+	
+	public Vector getWordVector(String[] words, String termsVectorsFile, String docVectorsFile) {
+		String cacheKey = Arrays.toString(words)+getResourceName();
+		if(vectorBuffer.containsKey(cacheKey))
+			return vectorBuffer.get(cacheKey);
+		if(vectorBuffer.size()>100)
+			vectorBuffer.clear();
+		
 		FlagConfig flagConfig = FlagConfig.parseFlagsFromString("-luceneindexpath "+getLuceneIndexFile() + 
-				" -termvectorsfile "+ getLuceneIndexFile()+"/"+termsVectorsFile+" -docvectorsfile "+  getLuceneIndexFile()+"/"+docVectorsFile);
+				" -termvectorsfile "+ getLuceneIndexFile()+"/"+termsVectorsFile+" -docvectorsfile "+  getLuceneIndexFile()+"/"+docVectorsFile+" -dimension 200");
 		LuceneUtils luceneUtils = null;
-
-		return CompoundVectorBuilder.getQueryVectorFromString(getLuceneTermVectorReader(flagConfig.termvectorsfile()),
-				luceneUtils, flagConfig, word1);
+		for(int i=0;i<words.length;i++){
+			words[i] = words[i].toLowerCase().replaceAll("^[^a-zA-Z]*", "").replaceAll("[^a-zA-Z]$", "").trim();
+		}
+		
+		Vector vecRes = CompoundVectorBuilder.getQueryVector(getLuceneTermVectorReader(flagConfig.termvectorsfile()),
+				luceneUtils, flagConfig, words);
+		vectorBuffer.put(cacheKey, vecRes);
+		return vecRes;
+	}
+	public Vector getWordVector(String[] words, String termsVectorsFile,
+			TermVectorType termVectorType) {
+		String cacheKey = Arrays.toString(words)+getResourceName()+termVectorType;
+		if(vectorBuffer.containsKey(cacheKey))
+			return vectorBuffer.get(cacheKey);
+		if(vectorBuffer.size()>100)
+			vectorBuffer.clear();
+		
+		for(int i=0;i<words.length;i++){
+			words[i] = words[i].toLowerCase().replaceAll("^[^a-zA-Z]*", "").replaceAll("[^a-zA-Z]$", "").trim();
+		}
+		
+		Vector res = null;
+		if(termVectorType==TermVectorType.W2V_PLAIN){
+			try {
+				for(String word: words){
+					float[] vals = W2VTermVectorsReader.readPlainWordVector(getLuceneIndexFile()+"/"+termsVectorsFile, word);
+					if(vals==null)
+						continue;
+					Vector v = new RealVector(vals);
+					if(res==null)
+						res = v;
+					else if(v!=null && !v.isZeroVector())
+						res.superpose(v, 1, null);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		vectorBuffer.put(cacheKey, res);
+		return res;
 	}
 
-
+	public Vector getPhraseVector(String phrase, String termVectorFile, String docVectorFile, 
+			TermVectorType termVectorType) {
+		Vector vecRes = null;
+		String[] words = phrase.split(" |\\/");
+		
+			
+		if(termVectorType==null)
+			vecRes = getWordVector(words, termVectorFile, docVectorFile);
+		else
+			vecRes = getWordVector(words, termVectorFile, termVectorType);
+		
+		return vecRes;
+	}
 
 }
